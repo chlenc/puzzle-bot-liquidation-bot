@@ -231,3 +231,17 @@ ${data.ducksSalesWeeklyInTotal}
 
 ${data.topDuck}`;
 };
+
+export const checkWalletAddress = async (address: string) => {
+  let res = null;
+  try {
+    const { data } = await axios.get(
+      `https://nodes.wavesexplorer.com/addresses/balance/${address}`
+    );
+    res = data;
+    console.log(res);
+  } catch (e) {
+    console.error(e);
+  }
+  return !!res;
+};
