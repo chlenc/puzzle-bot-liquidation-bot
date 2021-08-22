@@ -5,9 +5,16 @@ import {
   checkWalletAddress,
   getAnalytics,
   getCurrentWavesRate,
-} from "./services/dataService";
+  getDuckOnActionRelatedToWallet,
+  getDuckOnFarmingRelatedToWallet,
+  IDuck,
+} from "./services/statsService";
 import { getUserById } from "./controllers/userController";
 import { DuckUser } from "./models/duckUser";
+import watcherService from "./services/watcherService";
+import axios from "axios";
+import { getDuckName, sleep } from "./utils";
+import msg from "./messages_lib";
 import { initMongo } from "./services/mongo";
 
 const cron = require("node-cron");
@@ -28,34 +35,25 @@ initMongo().then();
 telegram.onText(/\/start/, async ({ chat, from }) => {
   const user = await getUserById(from.id);
   user == null && (await DuckUser.create({ ...from }));
-  await telegram.sendMessage(
-    chat.id,
-    "*Welcome to the Waves Ducks family!* \n" +
-      "\n" +
-      "[Waves Ducks](https://wavesducks.com/) is a game centered on collectable digital duck images, developed for active members of the Waves ecosystem. In this game, users acquire and collect digital images of ducks, which we call Waves Ducks\n" +
-      "\n" +
-      "To get daily game stats please click here 👉🏻 /stats !",
-    { parse_mode: "Markdown" }
-  );
+  await telegram.sendMessage(chat.id, msg.welcome, { parse_mode: "Markdown" });
 });
 
 telegram.onText(/\/id/, async ({ chat: { id } }) => {
   await telegram.sendMessage(id, String(id));
 });
+
 telegram.onText(/\/rate/, async ({ chat: { id } }) => {
   const rate = await getCurrentWavesRate();
   await telegram.sendMessage(id, rate);
 });
+
 telegram.onText(/\/version/, async ({ chat: { id } }) => {
   await telegram.sendMessage(id, commitCount("chlenc/big-black-duck-bot/"));
 });
 
 telegram.onText(/\/stats/, async ({ chat: { id } }) => {
   try {
-    const res = await telegram.sendMessage(
-      id,
-      "Loading data from the blockchain – may take some time"
-    );
+    const res = await telegram.sendMessage(id, msg.loading);
     const stats = await getAnalytics();
     await telegram.editMessageText(stats, {
       parse_mode: "Markdown",
@@ -67,8 +65,6 @@ telegram.onText(/\/stats/, async ({ chat: { id } }) => {
     console.log(e.toString());
   }
 });
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const sendChanelMessage = async (id: string, msg: string) => {
   try {
@@ -116,8 +112,7 @@ const decimals = 1e8;
 //       let duckCacheId = "";
 //       try {
 //         const { data: numberRawData } = await axios.get(
-//           `
-//     https://wavesducks.com/api/v0/achievements?ids=${duck.NFT}`
+//           ` https://wavesducks.com/api/v0/achievements?ids=${duck.NFT}`
 //         );
 //         const start = new Date().getTime();
 //         const {
@@ -158,8 +153,6 @@ const decimals = 1e8;
 //   }, 60 * 1000);
 // })();
 
-process.stdout.write("Bot has been started ✅ ");
-
 telegram.onText(
   RegExp("^(3P)[a-zA-Z0-9]{33}$"),
   async ({ chat, text, from }) => {
@@ -172,7 +165,77 @@ telegram.onText(
     }
     await telegram.sendMessage(
       chat.id,
-      res ? "correct wallet address" : "not correct wallet address"
+      res ? msg.correct_wallet_address : msg.wrong_wallet_address
     );
   }
 );
+
+// node api https://nodes.wavesexplorer.com/api-docs
+// data services https://api.wavesplatform.com/v0/docs/#/
+// dapp ui https://waves-dapp.com/3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG
+// ide https://waves-ide.com/
+// explorer https://wavesexplorer.com/address/3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG/script
+
+//to get all duck for owner on auction
+//https://nodes.wavesnodes.com/addresses/data/3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG?matches=^address_3PFuiqdoNKcqXpWTQR1ga9EJNmt92dic72X_auction_(.*)_lockedNFT$
+// (async () => {
+//   setInterval(async () => {
+//     const users = await DuckUser.find({ walletAddress: { $ne: null } }).exec();
+//
+//     await Promise.all(
+//       Array.from(users, async ({ walletAddress }) => {
+//         const ducksOnSale = await axios.get(
+//           `https://nodes.wavesnodes.com/addresses/data/${auctionDappAddress}?matches=^address_${walletAddress}_auction_(.*)_lockedNFT$`
+//         );
+//         const ducksOnFarming = axios.get(
+//           `https://nodes.wavesnodes.com/addresses/data/${farmingDappAddress}?matches=^address_${user.walletAddress}_asset(.*)_farmingPower$`
+//         );
+//       })
+//     );
+//
+//     users.forEach((user) => {
+//       if (user.walletAddress == null) return;
+//       //todo duck on sale
+//       axios.get(
+//         `https://nodes.wavesnodes.com/addresses/data/${auctionDappAddress}?matches=^address_${user.walletAddress}_auction_(.*)_lockedNFT$`
+//       );
+//       //todo duck on farming
+//       axios.get(
+//         `https://nodes.wavesnodes.com/addresses/data/${farmingDappAddress}?matches=^address_${user.walletAddress}_asset(.*)_farmingPower$`
+//       );
+//
+//       //todo получть список nft и отфильтровтаь уток
+//       // https://nodes.wavesexplorer.com/assets/nft/<ADDRESS>/limit/1000FeedbackFormModal
+//
+//       //todo по каждой утке чекать и обнавлять данные
+//       // базавая инва о утке https://wavesducks.wavesnodes.com/assets/details/D6qV2EN5ktciye7icSUxHJnvCMH1VBdPhczhPz69LvPs
+//       // биды тянем из дапа https://wavesducks.wavesnodes.com/addresses/data/3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG/auction_D6qV2EN5ktciye7icSUxHJnvCMH1VBdPhczhPz69LvPs_last
+//       // - изменение бидов (изменение наивысшей ставки на утку) - тянем из ноды
+//       // - изменение рарити утки / изменение доходности утки - тянем из даксэксплорера
+//       // - момент продажи утки - тоже
+//
+//       //todo если хоть одно из данных меняется, то кидать сообщеньку
+//     });
+//   }, 60 * 1000);
+// })();
+
+(async () => {
+  setInterval(async () => {
+    const users = await DuckUser.find({
+      walletAddress: { $ne: null },
+    }).exec();
+
+    await Promise.all(
+      users.map(async ({ walletAddress }) => {
+        const [auctionDucks, farmingDucks] = await Promise.all([
+          getDuckOnActionRelatedToWallet(walletAddress),
+          getDuckOnFarmingRelatedToWallet(walletAddress),
+        ]);
+
+        return { auctionDucks, farmingDucks };
+      })
+    );
+  }, 60 * 1000);
+})();
+
+process.stdout.write("Bot has been started ✅ ");

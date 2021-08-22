@@ -3,6 +3,12 @@ import { prettifyNums } from "../utils";
 import * as moment from "moment";
 
 const decimals = 1e8;
+const farmingDappAddress = "3PAETTtuW7aSiyKtn9GuML3RgtV1xdq1mQW";
+const auctionDappAddress = "3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG";
+
+type INodeResponse = {
+  data: [{ key: string; type: string; value: string }];
+};
 
 export interface IDuck {
   timestamp: number;
@@ -239,9 +245,44 @@ export const checkWalletAddress = async (address: string) => {
       `https://nodes.wavesexplorer.com/addresses/balance/${address}`
     );
     res = data;
-    console.log(res);
   } catch (e) {
     console.error(e);
   }
   return !!res;
+};
+
+//return array of ducks that on farming
+export const getDuckOnFarmingRelatedToWallet = async (address: string) => {
+  const url = `https://nodes.wavesnodes.com/addresses/data/${farmingDappAddress}?matches=^address_${address}_asset_(.*)_farmingPower$`;
+  console.log("farm", url);
+  try {
+    const { data }: INodeResponse = await axios.get(url);
+    return data
+      .filter((item) => +item.value > 0)
+      .map((i) => i.key.split("_")[3]);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+//return array of ducks that on auction
+export const getDuckOnActionRelatedToWallet = async (address: string) => {
+  const url = `https://nodes.wavesnodes.com/addresses/data/${auctionDappAddress}?matches=^address_${address}_auction_(.*)_lockedNFT$`;
+  console.log("auct", url);
+  try {
+    const { data }: INodeResponse = await axios.get(url);
+    return data.map((i) => i.value);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const updateDuckForUser = async (address: string) => {
+  const [auctionDucks, farmingDucks] = await Promise.all([
+    getDuckOnActionRelatedToWallet(address),
+    getDuckOnFarmingRelatedToWallet(address),
+  ]);
+
+  const userDucks = auctionDucks.concat(farmingDucks);
+  userDucks.map(() => {});
 };
