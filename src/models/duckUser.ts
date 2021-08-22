@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import { Document } from "mongoose";
-import { IDuck, IDucksSchema } from "./duck";
+import { DuckNftSchema, IDuckNft } from "./duckNft";
 
 export interface ITelegramUser {
   id: number;
@@ -13,7 +13,9 @@ export interface ITelegramUser {
 
 export interface IDuckUserParams {
   walletAddress?: string;
-  ducks?: IDuck[];
+  userDucks?: IDuckNft[];
+  farmingDucks?: IDuckNft[];
+  auctionDucks?: IDuckNft[];
 }
 
 export type TUserDocument = Document & ITelegramUser & IDuckUserParams;
@@ -26,7 +28,9 @@ const DuckUserSchema = new mongoose.Schema(
     last_name: { type: String, required: false },
     username: { type: String, required: false },
     walletAddress: { type: String, required: false },
-    ducks: IDucksSchema,
+    userDucks: DuckNftSchema,
+    farmingDucks: DuckNftSchema,
+    auctionDucks: DuckNftSchema,
   },
   { timestamps: true }
 );

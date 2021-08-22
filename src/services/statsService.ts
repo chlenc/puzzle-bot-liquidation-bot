@@ -1,14 +1,17 @@
 import axios from "axios";
 import { prettifyNums } from "../utils";
 import * as moment from "moment";
+import { IDuckNft } from "../models/duckNft";
 
 const decimals = 1e8;
 const farmingDappAddress = "3PAETTtuW7aSiyKtn9GuML3RgtV1xdq1mQW";
 const auctionDappAddress = "3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG";
 
-type INodeResponse = {
-  data: [{ key: string; type: string; value: string }];
-};
+type TDataEntry = { key: string; type: string; value: string };
+
+interface INodeResponse<T = TDataEntry[]> {
+  data: T;
+}
 
 export interface IDuck {
   timestamp: number;
@@ -238,7 +241,10 @@ ${data.ducksSalesWeeklyInTotal}
 ${data.topDuck}`;
 };
 
-export const checkWalletAddress = async (address: string) => {
+export const checkWalletAddress = async (
+  address?: string
+): Promise<boolean> => {
+  if (address == null) return false;
   let res = null;
   try {
     const { data } = await axios.get(
@@ -251,10 +257,24 @@ export const checkWalletAddress = async (address: string) => {
   return !!res;
 };
 
+//return array of ducks in the wallet
+export const getDuckOnUserWallet = async (
+  address: string
+): Promise<string[]> => {
+  const url = `https://nodes.wavesnodes.com/assets/nft/${address}/limit/1000`;
+  try {
+    const { data }: INodeResponse<IDuckNft[]> = await axios.get(url);
+    return data.filter((item) => /^DUCK/.test(item.name)).map((i) => i.assetId);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 //return array of ducks that on farming
-export const getDuckOnFarmingRelatedToWallet = async (address: string) => {
+export const getDuckOnFarmingRelatedToWallet = async (
+  address: string
+): Promise<string[]> => {
   const url = `https://nodes.wavesnodes.com/addresses/data/${farmingDappAddress}?matches=^address_${address}_asset_(.*)_farmingPower$`;
-  console.log("farm", url);
   try {
     const { data }: INodeResponse = await axios.get(url);
     return data
@@ -265,10 +285,14 @@ export const getDuckOnFarmingRelatedToWallet = async (address: string) => {
   }
 };
 
+const getDuckDetails = async (address: string): Promise<IDuckNft> =>
+  (await axios.get(`https://wavesducks.com/api/v1/ducks/nft/${address}`)).data;
+
 //return array of ducks that on auction
-export const getDuckOnActionRelatedToWallet = async (address: string) => {
+export const getDuckOnActionRelatedToWallet = async (
+  address: string
+): Promise<string[]> => {
   const url = `https://nodes.wavesnodes.com/addresses/data/${auctionDappAddress}?matches=^address_${address}_auction_(.*)_lockedNFT$`;
-  console.log("auct", url);
   try {
     const { data }: INodeResponse = await axios.get(url);
     return data.map((i) => i.value);
@@ -278,11 +302,76 @@ export const getDuckOnActionRelatedToWallet = async (address: string) => {
 };
 
 export const updateDuckForUser = async (address: string) => {
-  const [auctionDucks, farmingDucks] = await Promise.all([
+  const [auctionDucksRaw, farmingDucksRaw, userDucksRaw] = await Promise.all([
     getDuckOnActionRelatedToWallet(address),
     getDuckOnFarmingRelatedToWallet(address),
+    getDuckOnUserWallet(address),
   ]);
+  const [farmingDucks, auctionDucks, userDucks] = await Promise.all([
+    Promise.all(
+      farmingDucksRaw.map(async (assetId) => ({
+        ...(await getDuckDetails(assetId)),
+      }))
+    ),
+    Promise.all(
+      auctionDucksRaw.map(async (assetId) => ({
+        ...(await getDuckDetails(assetId)),
+      }))
+    ),
+    Promise.all(
+      userDucksRaw.map(async (assetId) => ({
+        ...(await getDuckDetails(assetId)),
+      }))
+    ),
+  ]);
+  return { farmingDucks, auctionDucks, userDucks };
+};
 
-  const userDucks = auctionDucks.concat(farmingDucks);
-  userDucks.map(() => {});
+export const compareFarmingDucks = (
+  lastArray: IDuckNft[],
+  currentArray: IDuckNft[]
+): string => {
+  return lastArray.reduce((acc, last) => {
+    const current = currentArray.find(
+      ({ assetId }) => assetId === last.assetId
+    );
+    if (
+      current != null &&
+      last.farmingParams.farmingPower !== current.farmingParams.farmingPower
+    ) {
+      acc += `farming power of duck ${current.name} has been changed from ${last.farmingParams.farmingPower} to ${current.farmingParams.farmingPower}\n`;
+    }
+    return acc;
+  }, "" as string);
+};
+
+export const compareRarityOfDucks = (
+  lastArray: IDuckNft[],
+  currentArray: IDuckNft[]
+): string =>
+  lastArray.reduce((acc, last) => {
+    const current = currentArray.find(
+      ({ assetId }) => assetId === last.assetId
+    );
+    if (current != null && last.rarity !== current.rarity) {
+      acc += `Rarity of duck ${current.name} has been changed from ${last.rarity} to ${current.rarity}\n`;
+    }
+    return acc;
+  }, "" as string);
+
+export const compareBidDucks = (
+  lastArray: IDuckNft[],
+  currentArray: IDuckNft[]
+): string => {
+  return lastArray.reduce((acc, last) => {
+    const current = currentArray.find(
+      ({ assetId }) => assetId === last.assetId
+    );
+    if (current != null && last.startPrice !== current.startPrice) {
+      acc += `Bid of duck ${current.name} has been changed from ${
+        last.startPrice / 100
+      } to ${current.startPrice / 100}\n`;
+    }
+    return acc;
+  }, "" as string);
 };
