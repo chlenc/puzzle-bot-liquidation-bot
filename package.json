@@ -28,6 +28,7 @@
     "node-cron": "^3.0.0",
     "node-telegram-bot-api": "^0.53.0",
     "selenium-webdriver": "^4.0.0-beta.4",
+    "sequelize": "^6.6.5",
     "twit": "^2.2.11"
   },
   "devDependencies": {
