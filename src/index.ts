@@ -127,8 +127,8 @@ cron.schedule("0 12,19 * * *", async () => {
       if (wavesAmount < 1000 / rate) continue;
       const link = `https://wavesducks.com/duck/${duck.NFT}?cacheId=${duckCacheId}`;
 
-      const ruMsg = `Утка ${name} (#${duckNumber}) была приобретена за ${wavesAmount} Waves ($${usdAmount} USD) \n\n${link}`;
-      const enMsg = `Duck ${name} (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD) \n\n${link}`;
+      const ruMsg = `Утка [${name}](${link}) (#${duckNumber}) была приобретена за ${wavesAmount} Waves ($${usdAmount} USD)`;
+      const enMsg = `Duck [${name}](${link}) (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD)`;
       const twitterMsg = `Duck ${name} (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD) \n#WavesDucks #nftgaming\n\n${link}`;
 
       await sendChanelMessage(process.env.RU_GROUP_ID, ruMsg);
