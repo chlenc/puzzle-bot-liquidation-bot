@@ -101,13 +101,28 @@ export const watchOnAuction = async () => {
     const enMsg = `Duck [${name}](${link}) (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD)`;
     const twitterMsg = `Duck ${name} (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD) \n#WavesDucks #nftgaming\n\n${link}`;
 
-    // await sendChanelMessageWithDelay(process.env.RU_GROUP_ID, ruMsg);
-    // await sendChanelMessageWithDelay(process.env.EN_GROUP_ID, enMsg);
-    // await sendChanelMessageWithDelay(process.env.ES_GROUP_ID, enMsg);
-    // await sendChanelMessageWithDelay(process.env.AR_GROUP_ID, enMsg);
-    // await sendChanelMessageWithDelay(process.env.PER_GROUP_ID, enMsg);
+    await telegramService.sendChanelMessageWithDelay(
+      process.env.RU_GROUP_ID,
+      ruMsg
+    );
+    await telegramService.sendChanelMessageWithDelay(
+      process.env.EN_GROUP_ID,
+      enMsg
+    );
+    await telegramService.sendChanelMessageWithDelay(
+      process.env.ES_GROUP_ID,
+      enMsg
+    );
+    await telegramService.sendChanelMessageWithDelay(
+      process.env.AR_GROUP_ID,
+      enMsg
+    );
+    await telegramService.sendChanelMessageWithDelay(
+      process.env.PER_GROUP_ID,
+      enMsg
+    );
 
-    await twitterService.postTwit(twitterMsg);
+    // await twitterService.postTwit(twitterMsg);
     await sleep(1000);
   }
 };

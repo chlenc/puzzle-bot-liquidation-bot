@@ -10,12 +10,10 @@ import { User } from "../models/user";
 // const user = await getUserById(from.id);
 // user == null && (await User.create({ ...from, stage: STAGE.START }));
 
-export const updateStage = async (updated: {}, userId: number) => {
-  const user = await getUserById(userId);
-  if (user != null) {
-    const updatedUser = await User.findByIdAndUpdate(user._id, updated).exec();
-    console.log(updatedUser);
-  }
+export const getUserById = async (id: number) => {
+  const user = await User.findOne((user) =>
+    user ? user.id === id : false
+  ).exec();
+  if (user.id !== id) return null;
+  return user;
 };
-export const getUserById = (id: number) =>
-  User.findOne((user) => (user ? user.id === id : false)).exec();

@@ -392,7 +392,7 @@ export const compareRarityOfDucks = (
     if (
       current != null &&
       last.rarity !== current.rarity &&
-      last.rarity - current.rarity > significantChangeOfRarity
+      Math.abs(last.rarity - current.rarity) > significantChangeOfRarity
     ) {
       const duckName = getDuckName(current.name, namesDictionary);
       const duckLink = `https://wavesducks.com/duck/${current.assetId}`;
