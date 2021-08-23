@@ -11,7 +11,7 @@ import {
   updateDuckForUser,
 } from "./services/statsService";
 import { getUserById } from "./controllers/userController";
-import { DuckUser } from "./models/duckUser";
+import { User } from "./models/user";
 import watcherService from "./services/watcherService";
 import axios from "axios";
 import { getDuckName, sleep } from "./utils";
@@ -35,7 +35,7 @@ initMongo().then();
 
 telegram.onText(/\/start/, async ({ chat, from }) => {
   const user = await getUserById(from.id);
-  user == null && (await DuckUser.create({ ...from }));
+  user == null && (await User.create({ ...from }));
   await telegram.sendMessage(chat.id, msg.welcome, { parse_mode: "Markdown" });
 });
 
@@ -49,7 +49,7 @@ telegram.onText(/\/address[ \t](.+)/, async ({ chat, from }, match) => {
   if (user == null) {
     return await telegram.sendMessage(chat.id, "something went wrong");
   }
-  await DuckUser.findByIdAndUpdate(user._id, {
+  await User.findByIdAndUpdate(user._id, {
     walletAddress: address,
   }).exec();
   await telegram.sendMessage(chat.id, msg.correct_wallet_address);
@@ -60,7 +60,7 @@ telegram.onText(/\/cancel/, async ({ chat, from }) => {
   if (user == null) {
     return await telegram.sendMessage(chat.id, "something went wrong");
   }
-  await DuckUser.findByIdAndUpdate(user._id, {
+  await User.findByIdAndUpdate(user._id, {
     walletAddress: null,
     auctionDucks: null,
     farmingDucks: null,
@@ -96,7 +96,7 @@ telegram.onText(/\/stats/, async ({ chat: { id } }) => {
   }
 });
 
-const sendChanelMessage = async (id: string, msg: string) => {
+const sendChanelMessageWithDelay = async (id: string, msg: string) => {
   try {
     await telegram.sendMessage(id, msg, { parse_mode: "Markdown" });
     await sleep(2000);
@@ -110,15 +110,15 @@ const decimals = 1e8;
 cron.schedule("0 12,19 * * *", async () => {
   const msg = await getAnalytics();
   try {
-    await sendChanelMessage(process.env.RU_GROUP_ID, msg);
+    await sendChanelMessageWithDelay(process.env.RU_GROUP_ID, msg);
     await sleep(2000);
-    await sendChanelMessage(process.env.EN_GROUP_ID, msg);
+    await sendChanelMessageWithDelay(process.env.EN_GROUP_ID, msg);
     await sleep(2000);
-    await sendChanelMessage(process.env.ES_GROUP_ID, msg);
+    await sendChanelMessageWithDelay(process.env.ES_GROUP_ID, msg);
     await sleep(2000);
-    await sendChanelMessage(process.env.AR_GROUP_ID, msg);
+    await sendChanelMessageWithDelay(process.env.AR_GROUP_ID, msg);
     await sleep(2000);
-    await sendChanelMessage(process.env.PER_GROUP_ID, msg);
+    await sendChanelMessageWithDelay(process.env.PER_GROUP_ID, msg);
     await sleep(2000);
   } catch (err) {
     console.error(err);
@@ -162,15 +162,15 @@ cron.schedule("0 12,19 * * *", async () => {
       if (wavesAmount < 1000 / rate) continue;
       const link = `https://wavesducks.com/duck/${duck.NFT}?cacheId=${duckCacheId}`;
 
-      const ruMsg = `Утка ${name} (#${duckNumber}) была приобретена за ${wavesAmount} Waves ($${usdAmount} USD) \n\n${link}`;
-      const enMsg = `Duck ${name} (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD) \n\n${link}`;
+      const ruMsg = `Утка [${name}](${link}) (#${duckNumber}) была приобретена за ${wavesAmount} Waves ($${usdAmount} USD)`;
+      const enMsg = `Duck [${name}](${link}) (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD)`;
       const twitterMsg = `Duck ${name} (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD) \n#WavesDucks #nftgaming\n\n${link}`;
 
-      await sendChanelMessage(process.env.RU_GROUP_ID, ruMsg);
-      await sendChanelMessage(process.env.EN_GROUP_ID, enMsg);
-      await sendChanelMessage(process.env.ES_GROUP_ID, enMsg);
-      await sendChanelMessage(process.env.AR_GROUP_ID, enMsg);
-      await sendChanelMessage(process.env.PER_GROUP_ID, enMsg);
+      // await sendChanelMessage(process.env.RU_GROUP_ID, ruMsg);
+      // await sendChanelMessage(process.env.EN_GROUP_ID, enMsg);
+      // await sendChanelMessage(process.env.ES_GROUP_ID, enMsg);
+      // await sendChanelMessage(process.env.AR_GROUP_ID, enMsg);
+      // await sendChanelMessage(process.env.PER_GROUP_ID, enMsg);
 
       // const twitterErr = await new Promise((r) =>
       //   twitter.post("statuses/update", { status: twitterMsg }, (err) => r(err))
@@ -183,58 +183,9 @@ cron.schedule("0 12,19 * * *", async () => {
   }, 60 * 1000);
 })();
 
-// node api https://nodes.wavesexplorer.com/api-docs
-// data services https://api.wavesplatform.com/v0/docs/#/
-// dapp ui https://waves-dapp.com/3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG
-// ide https://waves-ide.com/
-// explorer https://wavesexplorer.com/address/3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG/script
-
-//to get all duck for owner on auction
-//https://nodes.wavesnodes.com/addresses/data/3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG?matches=^address_3PFuiqdoNKcqXpWTQR1ga9EJNmt92dic72X_auction_(.*)_lockedNFT$
-// (async () => {
-//   setInterval(async () => {
-//     const users = await DuckUser.find({ walletAddress: { $ne: null } }).exec();
-//
-//     await Promise.all(
-//       Array.from(users, async ({ walletAddress }) => {
-//         const ducksOnSale = await axios.get(
-//           `https://nodes.wavesnodes.com/addresses/data/${auctionDappAddress}?matches=^address_${walletAddress}_auction_(.*)_lockedNFT$`
-//         );
-//         const ducksOnFarming = axios.get(
-//           `https://nodes.wavesnodes.com/addresses/data/${farmingDappAddress}?matches=^address_${user.walletAddress}_asset(.*)_farmingPower$`
-//         );
-//       })
-//     );
-//
-//     users.forEach((user) => {
-//       if (user.walletAddress == null) return;
-//       //todo duck on sale
-//       axios.get(
-//         `https://nodes.wavesnodes.com/addresses/data/${auctionDappAddress}?matches=^address_${user.walletAddress}_auction_(.*)_lockedNFT$`
-//       );
-//       //todo duck on farming
-//       axios.get(
-//         `https://nodes.wavesnodes.com/addresses/data/${farmingDappAddress}?matches=^address_${user.walletAddress}_asset(.*)_farmingPower$`
-//       );
-//
-//       //todo получть список nft и отфильтровтаь уток
-//       // https://nodes.wavesexplorer.com/assets/nft/<ADDRESS>/limit/1000FeedbackFormModal
-//
-//       //todo по каждой утке чекать и обнавлять данные
-//       // базавая инва о утке https://wavesducks.wavesnodes.com/assets/details/D6qV2EN5ktciye7icSUxHJnvCMH1VBdPhczhPz69LvPs
-//       // биды тянем из дапа https://wavesducks.wavesnodes.com/addresses/data/3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG/auction_D6qV2EN5ktciye7icSUxHJnvCMH1VBdPhczhPz69LvPs_last
-//       // - изменение бидов (изменение наивысшей ставки на утку) - тянем из ноды
-//       // - изменение рарити утки / изменение доходности утки - тянем из даксэксплорера
-//       // - момент продажи утки - тоже
-//
-//       //todo если хоть одно из данных меняется, то кидать сообщеньку
-//     });
-//   }, 60 * 1000);
-// })();
-
 (async () => {
   setInterval(async () => {
-    const users = await DuckUser.find({
+    const users = await User.find({
       walletAddress: { $ne: null },
     }).exec();
 
@@ -246,26 +197,36 @@ cron.schedule("0 12,19 * * *", async () => {
         auctionDucks: lastAuctionDucks,
         userDucks: lastUserDucks,
       } = user;
+
       const { farmingDucks, auctionDucks, userDucks } = await updateDuckForUser(
         user.walletAddress
       );
+
+      const { data: dict } = await axios.get(
+        "https://wavesducks.com/api/v1/duck-names"
+      );
+
       await user.update({ userDucks, farmingDucks, auctionDucks }).exec();
+
       //fixme farming
       if (lastFarmingDucks != null) {
-        message += compareFarmingDucks(lastFarmingDucks, farmingDucks);
+        message += compareFarmingDucks(lastFarmingDucks, farmingDucks, dict);
       }
+
       //fixme bids
       if (auctionDucks != null) {
-        message += compareBidDucks(lastAuctionDucks, auctionDucks);
+        message += compareBidDucks(lastAuctionDucks, auctionDucks, dict);
       }
 
       //fixme rarity
       message += compareRarityOfDucks(
         [].concat(lastFarmingDucks, lastAuctionDucks, lastUserDucks),
-        [].concat(farmingDucks, auctionDucks, userDucks)
+        [].concat(farmingDucks, auctionDucks, userDucks),
+        dict
       );
 
       message != "" && (await telegram.sendMessage(user.id, message));
+
       await sleep(1000);
     }
   }, 30 * 1000);

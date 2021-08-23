@@ -5,8 +5,8 @@ const msg = {
     "To get daily game stats please click here 👉🏻 /stats !" +
     "\n\nTo subscribe for getting changes of your ducks bids, rarity and sales, please send \n\n*/address <WALLET_ADDRESS>*\n\n" +
     "If you want to turn off subscription text me /cancel ",
-  loading: "Loading data from the blockchain – may take some time",
-  correct_wallet_address: "This address is correct!🤌🏻",
-  wrong_wallet_address: "This address is not correct!🗿",
+  loading: "Loading data from the blockchain – may take some time...",
+  correct_wallet_address: "Good! Since now you you will be getting changes!🤌🏻",
+  wrong_wallet_address: "Ooops... seems like this address is not correct!😮",
 };
 export default msg;

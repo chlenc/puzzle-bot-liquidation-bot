@@ -1,11 +1,12 @@
 import axios from "axios";
-import { prettifyNums } from "../utils";
+import { getDuckName, prettifyNums } from "../utils";
 import * as moment from "moment";
 import { IDuckNft } from "../models/duckNft";
 
 const decimals = 1e8;
 const farmingDappAddress = "3PAETTtuW7aSiyKtn9GuML3RgtV1xdq1mQW";
 const auctionDappAddress = "3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG";
+const significantChangeOfRarity = 1;
 
 type TDataEntry = { key: string; type: string; value: string };
 
@@ -257,7 +258,6 @@ export const checkWalletAddress = async (
   return !!res;
 };
 
-//return array of ducks in the wallet
 export const getDuckOnUserWallet = async (
   address: string
 ): Promise<string[]> => {
@@ -270,7 +270,6 @@ export const getDuckOnUserWallet = async (
   }
 };
 
-//return array of ducks that on farming
 export const getDuckOnFarmingRelatedToWallet = async (
   address: string
 ): Promise<string[]> => {
@@ -288,7 +287,6 @@ export const getDuckOnFarmingRelatedToWallet = async (
 const getDuckDetails = async (address: string): Promise<IDuckNft> =>
   (await axios.get(`https://wavesducks.com/api/v1/ducks/nft/${address}`)).data;
 
-//return array of ducks that on auction
 export const getDuckOnActionRelatedToWallet = async (
   address: string
 ): Promise<string[]> => {
@@ -329,7 +327,8 @@ export const updateDuckForUser = async (address: string) => {
 
 export const compareFarmingDucks = (
   lastArray: IDuckNft[],
-  currentArray: IDuckNft[]
+  currentArray: IDuckNft[],
+  namesDictionary
 ): string => {
   return lastArray.reduce((acc, last) => {
     const current = currentArray.find(
@@ -337,9 +336,14 @@ export const compareFarmingDucks = (
     );
     if (
       current != null &&
+      last.farmingParams != null &&
+      current.farmingParams != null &&
       last.farmingParams.farmingPower !== current.farmingParams.farmingPower
     ) {
-      acc += `farming power of duck ${current.name} has been changed from ${last.farmingParams.farmingPower} to ${current.farmingParams.farmingPower}\n`;
+      const duckName = getDuckName(current.name, namesDictionary);
+      const duckLink = `https://wavesducks.com/duck/${current.assetId}`;
+      acc += `Farming power of duck (${duckName})[${duckLink}] has been changed from ${last.farmingParams.farmingPower}
+       to ${current.farmingParams.farmingPower}\n`;
     }
     return acc;
   }, "" as string);
@@ -347,28 +351,44 @@ export const compareFarmingDucks = (
 
 export const compareRarityOfDucks = (
   lastArray: IDuckNft[],
-  currentArray: IDuckNft[]
+  currentArray: IDuckNft[],
+  namesDictionary
 ): string =>
   lastArray.reduce((acc, last) => {
     const current = currentArray.find(
       ({ assetId }) => assetId === last.assetId
     );
-    if (current != null && last.rarity !== current.rarity) {
-      acc += `Rarity of duck ${current.name} has been changed from ${last.rarity} to ${current.rarity}\n`;
+    if (
+      current != null &&
+      last.rarity !== current.rarity &&
+      last.rarity - current.rarity > significantChangeOfRarity
+    ) {
+      const duckName = getDuckName(current.name, namesDictionary);
+      const duckLink = `https://wavesducks.com/duck/${current.assetId}`;
+      acc += `Rarity of duck (${duckName})[${duckLink}] has been changed from ${last.rarity.toFixed()} to ${current.rarity.toFixed()}\n`;
     }
     return acc;
   }, "" as string);
 
 export const compareBidDucks = (
   lastArray: IDuckNft[],
-  currentArray: IDuckNft[]
+  currentArray: IDuckNft[],
+  namesDictionary
 ): string => {
   return lastArray.reduce((acc, last) => {
     const current = currentArray.find(
       ({ assetId }) => assetId === last.assetId
     );
-    if (current != null && last.startPrice !== current.startPrice) {
-      acc += `Bid of duck ${current.name} has been changed from ${
+    if (
+      current != null &&
+      last.startPrice != null &&
+      current.startPrice != null &&
+      last.startPrice !== current.startPrice
+    ) {
+      const duckName = getDuckName(current.name, namesDictionary);
+      const duckLink = `https://wavesducks.com/duck/${current.assetId}`;
+
+      acc += `Highest Bid of (${duckName})[${duckLink}] has been changed from ${
         last.startPrice / 100
       } to ${current.startPrice / 100}\n`;
     }

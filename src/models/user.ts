@@ -20,7 +20,7 @@ export interface IDuckUserParams {
 
 export type TUserDocument = Document & ITelegramUser & IDuckUserParams;
 
-const DuckUserSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
     id: { type: Number, required: true },
     is_bot: { type: Boolean, required: true },
@@ -35,7 +35,4 @@ const DuckUserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const DuckUser = mongoose.model<TUserDocument>(
-  "DuckUser",
-  DuckUserSchema
-);
+export const User = mongoose.model<TUserDocument>("User", UserSchema);

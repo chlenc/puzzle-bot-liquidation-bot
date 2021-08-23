@@ -23,7 +23,7 @@ class WatcherService {
   getUnsentData = async () => {
     const lastTimestamp = this.timestamp;
     const data = await this.getData();
-    this.timestamp = data[data.length - 1].timestamp;
+    if (data) this.timestamp = data[data.length - 1].timestamp;
     return data.filter(({ timestamp }) => timestamp > lastTimestamp);
   };
 

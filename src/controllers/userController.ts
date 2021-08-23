@@ -1,24 +1,21 @@
-import { DuckUser } from "../models/duckUser";
+import { User } from "../models/user";
 
 // export const createUser = async (userId: string) => {
-//   const user = await DuckUser.findOne((user) => user.id === userId);
+//   const user = await User.findOne((user) => user.id === userId);
 //   if (user == null) {
-//     const createdUser = await DuckUser.create({ userId });
+//     const createdUser = await User.create({ userId });
 //     console.log(createdUser);
 //   }
 // };
 // const user = await getUserById(from.id);
-// user == null && (await DuckUser.create({ ...from, stage: STAGE.START }));
+// user == null && (await User.create({ ...from, stage: STAGE.START }));
 
 export const updateStage = async (updated: {}, userId: number) => {
   const user = await getUserById(userId);
   if (user != null) {
-    const updatedUser = await DuckUser.findByIdAndUpdate(
-      user._id,
-      updated
-    ).exec();
+    const updatedUser = await User.findByIdAndUpdate(user._id, updated).exec();
     console.log(updatedUser);
   }
 };
 export const getUserById = (id: number) =>
-  DuckUser.findOne((user) => (user ? user.id === id : false)).exec();
+  User.findOne((user) => (user ? user.id === id : false)).exec();
