@@ -2,6 +2,7 @@ import axios from "axios";
 import { getDuckName, prettifyNums } from "../utils";
 import * as moment from "moment";
 import { IDuckNft } from "../models/duckNft";
+import telegramService from "./telegramService";
 
 const decimals = 1e8;
 const farmingDappAddress = "3PAETTtuW7aSiyKtn9GuML3RgtV1xdq1mQW";
@@ -195,7 +196,7 @@ export const numberOfDucksSoldThiWeekToday = async () => {
   return `🦆 > 💵 Number of ducks sold this week / today:  *${twoWeekAgoDucks.length} / ${todayDucks}*`;
 };
 
-export const getAnalytics = async () => {
+export const getStats = async (chatId?: number, messageId?: number) => {
   const data: any = (
     await Promise.all(
       Object.entries({
@@ -220,7 +221,8 @@ export const getAnalytics = async () => {
     acc[key] = result;
     return acc;
   }, {} as Record<string, any>);
-  return `
+
+  const msg = `
   *Daily Ducks Stats:*
   
 ${data.lastPriceForEgg}
@@ -240,6 +242,35 @@ ${data.numberOfDucksSoldThiWeekToday}
 ${data.ducksSalesWeeklyInTotal}
 
 ${data.topDuck}`;
+
+  if (chatId && messageId) {
+    await telegramService.telegram.editMessageText(msg, {
+      parse_mode: "Markdown",
+      chat_id: chatId,
+      message_id: messageId,
+    });
+    return;
+  }
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.RU_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.EN_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.ES_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.AR_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.PER_GROUP_ID,
+    msg
+  );
 };
 
 export const checkWalletAddress = async (
