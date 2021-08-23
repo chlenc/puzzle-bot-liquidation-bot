@@ -21,6 +21,7 @@ export interface IDuckNft {
   owner?: string;
   onFarming?: boolean;
   perchColor?: string | null;
+  auctionId?: string;
   farmingParams?: {
     lastCheckFarmedAmount?: number;
     withdrawnAmount?: number;
@@ -96,6 +97,8 @@ export const DuckNftSchema = {
     total_farmingPower: { type: Number, required: false },
     eggProduction: { type: String, required: false },
     startPrice: { type: Number, required: false },
+    auctionId: { type: String, required: false },
+    bid: { type: Number, required: false },
     farmingParams: FarmingParamsSchema,
     achievements: AchievementsSchema,
   },

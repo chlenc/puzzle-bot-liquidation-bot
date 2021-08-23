@@ -414,14 +414,14 @@ export const compareBidDucks = (
       current != null &&
       last.startPrice != null &&
       current.startPrice != null &&
-      last.startPrice !== current.startPrice
+      last.auctionId !== current.auctionId
     ) {
       const duckName = getDuckName(current.name, namesDictionary);
       const duckLink = `https://wavesducks.com/duck/${current.assetId}`;
 
-      acc += `Highest Bid of (${duckName})[${duckLink}] has been changed from ${
-        last.startPrice / 100
-      } to ${current.startPrice / 100}\n`;
+      //todo add quaery to get value of bid
+      // https://wavesducks.com/api/blockchain/addresses/data/{auctiondApp}?matches=auction_{auctionId}.
+      acc += `Highest Bid of (${duckName})[${duckLink}] has been changed from `;
     }
     return acc;
   }, "" as string);
