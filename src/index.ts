@@ -44,10 +44,7 @@ telegramService.telegram.onText(
     await User.findByIdAndUpdate(user._id, {
       walletAddress: address,
     }).exec();
-    await telegramService.telegram.sendMessage(
-      chat.id,
-      msg.correct_wallet_address
-    );
+    await telegramService.telegram.sendMessage(chat.id, msg.cancel_subsc);
   }
 );
 
@@ -65,6 +62,7 @@ telegramService.telegram.onText(/\/cancel/, async ({ chat, from }) => {
     farmingDucks: null,
     userDucks: null,
   }).exec();
+  await telegramService.telegram.sendMessage(chat.id, "something went wrong");
 });
 
 telegramService.telegram.onText(/\/id/, async ({ chat: { id } }) => {
