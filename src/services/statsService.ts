@@ -318,6 +318,13 @@ export const getDuckOnFarmingRelatedToWallet = async (
 const getDuckDetails = async (address: string): Promise<IDuckNft> =>
   (await axios.get(`https://wavesducks.com/api/v1/ducks/nft/${address}`)).data;
 
+const getDuckBids = async (auctionId: string): Promise<IDuckNft> =>
+  (
+    await axios.get(
+      `https://wavesducks.com/api/blockchain/addresses/data/${auctionDappAddress}?matches=auction_${auctionId}.`
+    )
+  ).data;
+
 export const getDuckOnActionRelatedToWallet = async (
   address: string
 ): Promise<string[]> => {
@@ -343,9 +350,12 @@ export const updateDuckForUser = async (address: string) => {
       }))
     ),
     Promise.all(
-      auctionDucksRaw.map(async (assetId) => ({
-        ...(await getDuckDetails(assetId)),
-      }))
+      auctionDucksRaw.map(async (assetId) => {
+        const details = await getDuckDetails(assetId);
+        const bids = await getDuckBids(details.auctionId);
+        //todo получаем биды и по их изменению смотрим появились ли новые ставки, отменились ли старые
+        return { ...details, bids };
+      })
     ),
     Promise.all(
       userDucksRaw.map(async (assetId) => ({
@@ -420,7 +430,7 @@ export const compareBidDucks = (
       const duckLink = `https://wavesducks.com/duck/${current.assetId}`;
 
       //todo add quaery to get value of bid
-      // https://wavesducks.com/api/blockchain/addresses/data/{auctiondApp}?matches=auction_{auctionId}.
+
       acc += `Highest Bid of (${duckName})[${duckLink}] has been changed from `;
     }
     return acc;

@@ -44,6 +44,9 @@ export const watchOnDucks = async () => {
     }
 
     //fixme bids
+    //todo если утка пропадает отсюда,то она либо продана, либо снята с аукциона.
+    // статус аукциона "finished" говорит о том что продана
+    // статус аукциона "cancelled" говорит о том что аукцион отменен
     if (auctionDucks != null) {
       message += compareBidDucks(lastAuctionDucks, auctionDucks, dict);
     }
