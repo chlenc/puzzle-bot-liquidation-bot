@@ -36,14 +36,12 @@ telegramService.telegram.onText(
     }
     const user = await getUserById(from.id);
     if (user == null) {
-      return await telegramService.telegram.sendMessage(
-        chat.id,
-        "something went wrong"
-      );
+      await User.create({ ...from, walletAddress: address });
+    } else {
+      await User.findByIdAndUpdate(user._id, {
+        walletAddress: address,
+      }).exec();
     }
-    await User.findByIdAndUpdate(user._id, {
-      walletAddress: address,
-    }).exec();
     await telegramService.telegram.sendMessage(
       chat.id,
       msg.correct_wallet_address
