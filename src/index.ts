@@ -64,6 +64,7 @@ telegramService.telegram.onText(/\/cancel/, async ({ chat, from }) => {
     auctionDucks: null,
     farmingDucks: null,
     userDucks: null,
+    bids: null,
   }).exec();
   await telegramService.telegram.sendMessage(chat.id, msg.cancel_subsc);
 });
@@ -101,6 +102,12 @@ cron.schedule("0 12,19 * * *", getStats);
 
 cron.schedule("* * * * *", watchOnAuction);
 
-cron.schedule("* * * * *", watchOnDucks);
+// cron.schedule("* * * * *", watchOnDucks);
+
+(async () => {
+  setInterval(async () => {
+    await watchOnDucks();
+  }, 30 * 1000);
+})();
 
 process.stdout.write("Bot has been started ✅ ");

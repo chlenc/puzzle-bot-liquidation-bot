@@ -43,6 +43,9 @@ export interface IDuckNft {
   total_farmingPower?: number;
   eggProduction?: string;
   startPrice?: number;
+  auctionStatus?: string;
+  bidsAmount?: number;
+  highestBid?: number;
 }
 
 const FarmingParamsSchema = {
@@ -98,9 +101,11 @@ export const DuckNftSchema = {
     eggProduction: { type: String, required: false },
     startPrice: { type: Number, required: false },
     auctionId: { type: String, required: false },
-    bid: { type: Number, required: false },
     farmingParams: FarmingParamsSchema,
     achievements: AchievementsSchema,
+    auctionStatus: { type: String, required: false },
+    bidsAmount: { type: Number, required: false },
+    highestBid: { type: Number, required: false },
   },
   required: false,
 };

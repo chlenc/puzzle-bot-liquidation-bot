@@ -1,16 +1,11 @@
 import { User } from "../models/user";
-import {
-  compareBidDucks,
-  compareFarmingDucks,
-  compareRarityOfDucks,
-  getCurrentWavesRate,
-  updateDuckForUser,
-} from "./statsService";
+import { getCurrentWavesRate } from "./statsService";
 import axios from "axios";
 import telegramService from "./telegramService";
 import { getDuckName, sleep } from "../utils";
 import watcherService from "./watcherService";
-import twitterService from "./twitterService";
+import { compareAllFields } from "./comparingService";
+import { updateUserDetails } from "./updateService";
 
 const decimals = 1e8;
 
@@ -19,51 +14,49 @@ export const watchOnDucks = async () => {
     walletAddress: { $ne: null },
   }).exec();
 
+  const { data: nameDictionary } = await axios.get(
+    "https://wavesducks.com/api/v1/duck-names"
+  );
+
   for (let index in users) {
-    let message = ``;
     const user = users[index];
     const {
       farmingDucks: lastFarmingDucks,
       auctionDucks: lastAuctionDucks,
       userDucks: lastUserDucks,
+      bids: lastBids,
     } = user;
 
-    const { farmingDucks, auctionDucks, userDucks } = await updateDuckForUser(
-      user.walletAddress
-    );
+    const { farmingDucks, auctionDucks, userDucks, bids } =
+      await updateUserDetails(user.walletAddress);
 
-    const { data: dict } = await axios.get(
-      "https://wavesducks.com/api/v1/duck-names"
-    );
+    await user.update({ userDucks, farmingDucks, auctionDucks, bids }).exec();
 
-    await user.update({ userDucks, farmingDucks, auctionDucks }).exec();
-
-    //fixme farming
-    if (lastFarmingDucks != null) {
-      message += compareFarmingDucks(lastFarmingDucks, farmingDucks, dict);
-    }
-
-    //fixme bids
-    //todo если утка пропадает отсюда,то она либо продана, либо снята с аукциона.
-    // статус аукциона "finished" говорит о том что продана
-    // статус аукциона "cancelled" говорит о том что аукцион отменен
-    if (auctionDucks != null) {
-      message += compareBidDucks(lastAuctionDucks, auctionDucks, dict);
-    }
-
-    //fixme rarity
-    message += compareRarityOfDucks(
-      [].concat(lastFarmingDucks, lastAuctionDucks, lastUserDucks),
-      [].concat(farmingDucks, auctionDucks, userDucks),
-      dict
+    const message = compareAllFields(
+      {
+        farmingDucks,
+        auctionDucks,
+        userDucks,
+        bids,
+      },
+      {
+        lastFarmingDucks,
+        lastAuctionDucks,
+        lastUserDucks,
+        lastBids,
+      },
+      nameDictionary
     );
 
     message != "" &&
-      (await telegramService.telegram.sendMessage(user.id, message));
+      (await telegramService.telegram.sendMessage(user.id, message, {
+        parse_mode: "Markdown",
+      }));
 
     await sleep(1000);
   }
 };
+
 export const watchOnAuction = async () => {
   const data = await watcherService.getUnsentData();
   const rate = await getCurrentWavesRate();

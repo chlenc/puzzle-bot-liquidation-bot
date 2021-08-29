@@ -1,6 +1,7 @@
 import * as mongoose from "mongoose";
 import { Document } from "mongoose";
 import { DuckNftSchema, IDuckNft } from "./duckNft";
+import { BidSchema, IBid } from "./bid";
 
 export interface ITelegramUser {
   id: number;
@@ -16,6 +17,7 @@ export interface IDuckUserParams {
   userDucks?: IDuckNft[];
   farmingDucks?: IDuckNft[];
   auctionDucks?: IDuckNft[];
+  bids?: IBid[];
 }
 
 export type TUserDocument = Document & ITelegramUser & IDuckUserParams;
@@ -31,6 +33,7 @@ const UserSchema = new mongoose.Schema(
     userDucks: DuckNftSchema,
     farmingDucks: DuckNftSchema,
     auctionDucks: DuckNftSchema,
+    bids: BidSchema,
   },
   { timestamps: true }
 );
