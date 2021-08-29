@@ -27,21 +27,24 @@ telegramService.telegram.onText(
   /\/address[ \t](.+)/,
   async ({ chat, from }, match) => {
     const address = match[1];
-    const isValidAddress = await checkWalletAddress(address);
+
+    let user = await getUserById(from.id);
+    if (user == null) {
+      user = await User.create({ ...from });
+    }
+
+    const isValidAddress = await checkWalletAddress(address).catch(() => false);
     if (!isValidAddress) {
       return await telegramService.telegram.sendMessage(
         chat.id,
         msg.wrong_wallet_address
       );
     }
-    const user = await getUserById(from.id);
-    if (user == null) {
-      await User.create({ ...from, walletAddress: address });
-    } else {
-      await User.findByIdAndUpdate(user._id, {
-        walletAddress: address,
-      }).exec();
-    }
+
+    await User.findByIdAndUpdate(user._id, {
+      walletAddress: address,
+    }).exec();
+
     await telegramService.telegram.sendMessage(
       chat.id,
       msg.correct_wallet_address

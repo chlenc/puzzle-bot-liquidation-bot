@@ -15,7 +15,7 @@ export const getDuckOnUserWallet = async (
     const { data }: INodeResponse<IDuckNft[]> = await axios.get(url);
     return data.filter((item) => /^DUCK/.test(item.name)).map((i) => i.assetId);
   } catch (e) {
-    console.error(e);
+    console.warn(e);
   }
 };
 
@@ -28,7 +28,7 @@ export const getBidsOnUserWallet = async (address: string): Promise<IBid[]> => {
       return [...acc, { auctionId: split[3], bidId: split[5], duckId: value }];
     }, []);
   } catch (e) {
-    console.error(e);
+    console.warn(e);
   }
 };
 
@@ -42,7 +42,7 @@ export const getDuckOnFarmingRelatedToWallet = async (
       .filter((item) => +item.value > 0)
       .map((i) => i.key.split("_")[3]);
   } catch (e) {
-    console.error(e);
+    console.warn(e);
   }
 };
 
@@ -54,7 +54,7 @@ export const getDuckOnAuctionRelatedToWallet = async (
     const { data }: INodeResponse = await axios.get(url);
     return data.map((i) => i.value);
   } catch (e) {
-    console.error(e);
+    console.warn(e);
   }
 };
 

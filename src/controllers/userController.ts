@@ -1,9 +1,7 @@
 import { User } from "../models/user";
 
 export const getUserById = async (id: number) => {
-  const user = await User.findOne((user) =>
-    user ? user.id === id : false
-  ).exec();
-  if (user == null || user.id !== id) return null;
-  return user;
+  const users = await User.find({ id: { $eq: id } }).exec();
+  if (users.length == 0 || users[0].id !== id) return null;
+  return users[0];
 };

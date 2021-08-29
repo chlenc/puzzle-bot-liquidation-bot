@@ -253,7 +253,7 @@ export const checkWalletAddress = async (
     );
     res = data;
   } catch (e) {
-    console.error(e);
+    console.warn(e);
   }
   return !!res;
 };
