@@ -8,7 +8,7 @@ export const initMongo = () =>
       useUnifiedTopology: true,
     })
     .then(() => {
-      console.log("\n✅  Connected to MongoDB");
+      console.log("\nConnected to MongoDB ✅  ");
       /** ready to use. The `mongoose.connect()` promise resolves to undefined. */
     })
     .catch((err) => {

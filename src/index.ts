@@ -107,7 +107,11 @@ cron.schedule("* * * * *", watchOnAuction);
 
 (async () => {
   setInterval(async () => {
-    await watchOnDucks();
+    try {
+      await watchOnDucks();
+    } catch (e) {
+      console.log(e.toString());
+    }
   }, 30 * 1000);
 })();
 
