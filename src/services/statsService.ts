@@ -1,28 +1,8 @@
 import axios from "axios";
 import { prettifyNums } from "../utils";
 import * as moment from "moment";
-
-const decimals = 1e8;
-
-export interface IDuck {
-  timestamp: number;
-  duckName: string;
-  amount: number; //waves
-  NFT: string;
-  date: string;
-  buyType: "instantBuy" | "acceptBid";
-}
-
-export interface IHatchDuck {
-  date: Date;
-  timestamp: number;
-  NFT: string;
-  duckPrice: number;
-  duckName: string;
-}
-
-type TAuctionRespData = { data: { auctionData: IDuck[] } };
-type THatchingRespData = { data: { duckData: IHatchDuck[] } };
+import telegramService from "./telegramService";
+import { decimals, TAuctionRespData, THatchingRespData } from "../interfaces";
 
 export const getCurrentWavesRate = async () => {
   const { data } = await axios.get(
@@ -185,7 +165,7 @@ export const numberOfDucksSoldThiWeekToday = async () => {
   return `🦆 > 💵 Number of ducks sold this week / today:  *${twoWeekAgoDucks.length} / ${todayDucks}*`;
 };
 
-export const getAnalytics = async () => {
+export const getStats = async (chatId?: number, messageId?: number) => {
   const data: any = (
     await Promise.all(
       Object.entries({
@@ -210,7 +190,8 @@ export const getAnalytics = async () => {
     acc[key] = result;
     return acc;
   }, {} as Record<string, any>);
-  return `
+
+  const msg = `
   *Daily Ducks Stats:*
   
 ${data.lastPriceForEgg}
@@ -230,4 +211,49 @@ ${data.numberOfDucksSoldThiWeekToday}
 ${data.ducksSalesWeeklyInTotal}
 
 ${data.topDuck}`;
+
+  if (chatId && messageId) {
+    await telegramService.telegram.editMessageText(msg, {
+      parse_mode: "Markdown",
+      chat_id: chatId,
+      message_id: messageId,
+    });
+    return;
+  }
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.RU_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.EN_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.ES_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.AR_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.PER_GROUP_ID,
+    msg
+  );
+};
+
+export const checkWalletAddress = async (
+  address?: string
+): Promise<boolean> => {
+  if (address == null) return false;
+  let res = null;
+  try {
+    const { data } = await axios.get(
+      `https://nodes.wavesexplorer.com/addresses/balance/${address}`
+    );
+    res = data;
+  } catch (e) {
+    console.error(e);
+  }
+  return !!res;
 };
