@@ -3,23 +3,30 @@ import telegramService from "./services/telegramService";
 import {
   checkWalletAddress,
   getCurrentWavesRate,
-  getStats,
 } from "./services/statsService";
 import { getUserById } from "./controllers/userController";
 import { User } from "./models/user";
 import msg from "./messages_lib";
 import { initMongo } from "./services/mongo";
-import { watchOnAuction, watchOnDucks } from "./services/crons";
+import {
+  sendStatisticMessageToChannels,
+  watchOnAuction,
+  watchOnDucks,
+  watchOnStats,
+} from "./services/crons";
+import { getStatisticFromDB } from "./controllers/statsController";
 
 const cron = require("node-cron");
 
 initMongo().then();
 
+const parse_mode = "Markdown";
+
 telegramService.telegram.onText(/\/start/, async ({ chat, from }) => {
   const user = await getUserById(from.id);
   user == null && (await User.create({ ...from }));
   await telegramService.telegram.sendMessage(chat.id, msg.welcome, {
-    parse_mode: "Markdown",
+    parse_mode,
   });
 });
 
@@ -87,32 +94,16 @@ telegramService.telegram.onText(/\/version/, async ({ chat: { id } }) => {
 });
 
 telegramService.telegram.onText(/\/stats/, async ({ chat: { id } }) => {
-  try {
-    const res = await telegramService.telegram.sendMessage(id, msg.loading);
-    await getStats(id, res.message_id);
-  } catch (e) {
-    await telegramService.telegram.sendMessage(
-      id,
-      "ooops... something went wrong"
-    );
-    console.log(e.toString());
-  }
+  const stats = await getStatisticFromDB();
+  await telegramService.telegram.sendMessage(id, stats, { parse_mode });
 });
 
-cron.schedule("0 12,19 * * *", getStats);
+cron.schedule("* * * * *", watchOnStats);
+
+cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
 
 cron.schedule("* * * * *", watchOnAuction);
 
-// cron.schedule("* * * * *", watchOnDucks);
-
-(async () => {
-  setInterval(async () => {
-    try {
-      await watchOnDucks();
-    } catch (e) {
-      console.log(e.toString());
-    }
-  }, 30 * 1000);
-})();
+cron.schedule("* * * * *", watchOnDucks);
 
 process.stdout.write("Bot has been started ✅ ");

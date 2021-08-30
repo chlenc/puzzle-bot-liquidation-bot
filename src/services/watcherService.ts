@@ -29,7 +29,7 @@ class WatcherService {
 
   private getData = async () => {
     const { data }: TRespData = await axios.get(
-      "https://duxplorer.com/auction/json"
+      "https://node2.duxplorer.com/auction/json"
     );
     if (!data.auctionData) return;
     return data.auctionData.sort((x, y) => x.timestamp - y.timestamp);
