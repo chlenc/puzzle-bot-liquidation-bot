@@ -52,6 +52,7 @@ export const getDuckOnAuctionRelatedToWallet = async (
   const url = `https://nodes.wavesnodes.com/addresses/data/${auctionDappAddress}?matches=^address_${address}_auction_(.*)_lockedNFT$`;
   try {
     const { data }: INodeResponse = await axios.get(url);
+    if (!data) return [];
     return data.map((i) => i.value).filter((v) => !!v);
   } catch (e) {
     console.warn(e);
