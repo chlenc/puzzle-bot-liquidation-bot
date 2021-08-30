@@ -100,8 +100,11 @@ export const compareUserBids = (
     }
     // if (
     //   last.maxAuctionAmount !== current.maxAuctionAmount &&
-    //   current.bidAmount !== last.maxAuctionAmount
+    //   current.bidAmount !== last.maxAuctionAmount &&
+    //   current.bidStatus !== "cancelled"
     // ) {
+    //   console.log("last", last);
+    //   console.log("current", current);
     //   acc += `New bid for [${name}](${duckLink}) that is bigger than your has been added`;
     // }
     if (last.auctionStatus !== current.auctionStatus) {
