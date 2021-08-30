@@ -98,12 +98,12 @@ export const compareUserBids = (
     ) {
       acc += `Your bid on [${name}](${duckLink}) has been cancelled`;
     }
-    if (
-      last.maxAuctionAmount !== current.maxAuctionAmount &&
-      current.bidAmount !== last.maxAuctionAmount
-    ) {
-      acc += `New bid for [${name}](${duckLink}) that is bigger than your has been added`;
-    }
+    // if (
+    //   last.maxAuctionAmount !== current.maxAuctionAmount &&
+    //   current.bidAmount !== last.maxAuctionAmount
+    // ) {
+    //   acc += `New bid for [${name}](${duckLink}) that is bigger than your has been added`;
+    // }
     if (last.auctionStatus !== current.auctionStatus) {
       if (current.auctionStatus === "finished") {
         acc += `[${name}](${duckLink}) that you were trying to buy has been sold`;
