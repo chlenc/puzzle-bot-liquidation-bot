@@ -6,12 +6,16 @@ class TwitterService {
   twitter: Twit;
 
   constructor() {
-    this.twitter = new Twit({
-      consumer_key: process.env.CONSUMER_KEY,
-      consumer_secret: process.env.CONSUMER_SECRET,
-      access_token: process.env.ACCESS_TOKEN_KEY,
-      access_token_secret: process.env.ACCESS_TOKEN_SECRET,
-    });
+    try {
+      this.twitter = new Twit({
+        consumer_key: process.env.CONSUMER_KEY,
+        consumer_secret: process.env.CONSUMER_SECRET,
+        access_token: process.env.ACCESS_TOKEN_KEY,
+        access_token_secret: process.env.ACCESS_TOKEN_SECRET,
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   postTwit = async (msg: string) => {

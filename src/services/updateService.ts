@@ -152,6 +152,7 @@ export const updateUserDetails = async (address: string) => {
   return { farmingDucks, auctionDucks, userDucks, bids };
 };
 
+//todo make
 const getBidStatus = async (auctionId: string, bidId: string) => {
   let url = `https://wavesducks.com/api/blockchain/addresses/data/3PEBtiSVLrqyYxGd76vXKu8FFWWsD1c5uYG?matches=auction_${auctionId}_bid_${bidId}_status`;
   const bidStatus = await axios.get(url);

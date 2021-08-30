@@ -104,6 +104,6 @@ cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
 
 cron.schedule("* * * * *", watchOnAuction);
 
-cron.schedule("* * * * *", watchOnDucks);
+cron.schedule("*/5 * * * *", watchOnDucks);
 
 process.stdout.write("Bot has been started ✅ ");
