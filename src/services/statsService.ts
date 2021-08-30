@@ -135,7 +135,7 @@ export const topDuck = async () => {
   const {
     data: { cacheId },
   } = await axios.get(
-    `https://wavesducks.com/api/v1/preview/preload/duck/${topDuck.NFT}`
+    `https://wavesducks.com/api/v1/preview/preload/duck/${topDuck.NFT}?auctionId=${topDuck.auctionId}`
   );
   const link = `https://wavesducks.com/duck/${topDuck.NFT}?cacheId=${cacheId}`;
 

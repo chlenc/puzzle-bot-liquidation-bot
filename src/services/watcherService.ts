@@ -9,7 +9,23 @@ export interface IDuck {
   buyType: "instantBuy" | "acceptBid";
 }
 
-type TRespData = { data: { auctionData: IDuck[] } };
+export interface IAuctionDuck {
+  achievements?: string;
+  rawAchievements?: string;
+  timestamp?: number;
+  duckName?: string;
+  duckNr?: number;
+  duckRealName?: string;
+  NFT?: string;
+  date?: string;
+  buyType?: string;
+  auctionId?: string;
+  hasChildren?: number;
+  rarity?: number;
+  amount?: number;
+}
+
+type TRespData = { data: { auctionData: IAuctionDuck[] } };
 
 class WatcherService {
   timestamp = new Date().getTime();

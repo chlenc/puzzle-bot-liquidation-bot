@@ -81,13 +81,13 @@ export const watchOnAuction = async () => {
     let duckCacheId = "";
     try {
       const { data: numberRawData } = await axios.get(
-        ` https://wavesducks.com/api/v0/achievements?ids=${duck.NFT}`
+        `https://wavesducks.com/api/v0/achievements?ids=${duck.NFT}`
       );
       const start = new Date().getTime();
       const {
         data: { cacheId },
       } = await axios.get(
-        `https://wavesducks.com/api/v1/preview/preload/duck/${duck.NFT}`
+        `https://wavesducks.com/api/v1/preview/preload/duck/${duck.NFT}?actionId=${duck.auctionId}`
       );
       console.log(
         `⏰ preload time for cacheId ${cacheId} and NFT ${duck.NFT} is ${
@@ -123,7 +123,8 @@ export const watchOnAuction = async () => {
         message: enMsg,
       },
       {
-        groupId: process.env.PER_GROUP_ID,
+        groupId: "383909141",
+        // groupId: process.env.PER_GROUP_ID,
         message: enMsg,
       },
     ];
@@ -135,7 +136,7 @@ export const watchOnAuction = async () => {
       );
     }
 
-    await twitterService.postTwit(twitterMsg);
+    // await twitterService.postTwit(twitterMsg);
     await sleep(1000);
   }
 };
