@@ -10,8 +10,8 @@ export type TMessageDocument = Document & IMessage;
 
 const MessageSchema = new mongoose.Schema(
   {
-    userId: { type: Number, required: true },
-    message: { type: String, required: true },
+    userId: { type: Number, required: true, default: "" },
+    message: { type: String, required: true, default: "" },
   },
   { timestamps: true }
 );
