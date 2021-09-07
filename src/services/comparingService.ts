@@ -102,7 +102,10 @@ export const compareUserBids = (
       last.maxAuctionAmount !== current.maxAuctionAmount &&
       current.bidAmount !== last.maxAuctionAmount
     ) {
-      acc += `New bid for [${name}](${duckLink}) that is bigger than your has been added`;
+      console.log("❗here is potential spam problem️❗️");
+      console.log("last", last);
+      console.log("current", current);
+      // acc += `New bid for [${name}](${duckLink}) that is bigger than your has been added`;
     }
     if (last.auctionStatus !== current.auctionStatus) {
       if (current.auctionStatus === "finished") {

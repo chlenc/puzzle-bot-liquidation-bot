@@ -1,11 +1,19 @@
 import { User } from "../models/user";
-import { getCurrentWavesRate } from "./statsService";
+import {
+  getCurrentWavesRate,
+  getStatsInfoFromBlockchain,
+} from "./statsService";
 import axios from "axios";
 import telegramService from "./telegramService";
 import { getDuckName, sleep } from "../utils";
 import watcherService from "./watcherService";
 import { compareAllFields } from "./comparingService";
 import { updateUserDetails } from "./updateService";
+import {
+  getStatisticFromDB,
+  updateStats,
+} from "../controllers/statsController";
+import twitterService from "./twitterService";
 
 const decimals = 1e8;
 
@@ -73,13 +81,13 @@ export const watchOnAuction = async () => {
     let duckCacheId = "";
     try {
       const { data: numberRawData } = await axios.get(
-        ` https://wavesducks.com/api/v0/achievements?ids=${duck.NFT}`
+        `https://wavesducks.com/api/v0/achievements?ids=${duck.NFT}`
       );
       const start = new Date().getTime();
       const {
         data: { cacheId },
       } = await axios.get(
-        `https://wavesducks.com/api/v1/preview/preload/duck/${duck.NFT}`
+        `https://wavesducks.com/api/v1/preview/preload/duck/${duck.NFT}?actionId=${duck.auctionId}`
       );
       console.log(
         `⏰ preload time for cacheId ${cacheId} and NFT ${duck.NFT} is ${
@@ -97,28 +105,66 @@ export const watchOnAuction = async () => {
     const enMsg = `Duck [${name}](${link}) (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD)`;
     const twitterMsg = `Duck ${name} (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD) \n#WavesDucks #nftgaming\n\n${link}`;
 
-    await telegramService.sendChanelMessageWithDelay(
-      process.env.RU_GROUP_ID,
-      ruMsg
-    );
-    await telegramService.sendChanelMessageWithDelay(
-      process.env.EN_GROUP_ID,
-      enMsg
-    );
-    await telegramService.sendChanelMessageWithDelay(
-      process.env.ES_GROUP_ID,
-      enMsg
-    );
-    await telegramService.sendChanelMessageWithDelay(
-      process.env.AR_GROUP_ID,
-      enMsg
-    );
-    await telegramService.sendChanelMessageWithDelay(
-      process.env.PER_GROUP_ID,
-      enMsg
-    );
+    const groups = [
+      {
+        groupId: process.env.RU_GROUP_ID,
+        message: ruMsg,
+      },
+      {
+        groupId: process.env.EN_GROUP_ID,
+        message: enMsg,
+      },
+      {
+        groupId: process.env.ES_GROUP_ID,
+        message: enMsg,
+      },
+      {
+        groupId: process.env.AR_GROUP_ID,
+        message: enMsg,
+      },
+      {
+        groupId: "383909141",
+        // groupId: process.env.PER_GROUP_ID,
+        message: enMsg,
+      },
+    ];
+
+    for (let index in groups) {
+      await telegramService.sendChanelMessageWithDelay(
+        groups[index].groupId,
+        groups[index].message
+      );
+    }
 
     // await twitterService.postTwit(twitterMsg);
     await sleep(1000);
   }
+};
+
+export const watchOnStats = async () => {
+  await updateStats(await getStatsInfoFromBlockchain());
+};
+
+export const sendStatisticMessageToChannels = async () => {
+  const msg = await getStatisticFromDB();
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.RU_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.EN_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.ES_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.AR_GROUP_ID,
+    msg
+  );
+  await telegramService.sendChanelMessageWithDelay(
+    process.env.PER_GROUP_ID,
+    msg
+  );
 };

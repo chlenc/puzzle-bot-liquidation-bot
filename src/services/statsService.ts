@@ -1,7 +1,6 @@
 import axios from "axios";
 import { prettifyNums } from "../utils";
 import * as moment from "moment";
-import telegramService from "./telegramService";
 import { decimals, TAuctionRespData, THatchingRespData } from "../interfaces";
 
 export const getCurrentWavesRate = async () => {
@@ -25,14 +24,13 @@ export const lastPriceForEgg = async () => {
   ).toFixed(2)})*`;
 };
 export const totalFarmingPower = async () => {
-  const { data } = await axios.get("https://duxplorer.com/farming/json");
+  const { data } = await axios.get("https://node2.duxplorer.com/farming/json");
   const res = data.farmData.reduce(
     (acc, { farmingPower }) => acc + farmingPower,
     0
   );
   return `💪 Total farming power: *${res}*`;
 };
-
 export const lastDuckPriceForHatching = async () => {
   const { data } = await axios.get(
     "https://wavesducks.wavesnodes.com/addresses/data/3PEktVux2RhchSN63DsDo4b4mz4QqzKSeDv/ducks_last_price"
@@ -41,18 +39,16 @@ export const lastDuckPriceForHatching = async () => {
 
   return `🥚 > 🦆 Last duck price for hatching: *${hatching} EGG*`;
 };
-
 export const totalNumberOfDucks = async () => {
-  const hatching = await axios.get("https://duxplorer.com/hatching/json");
-  const breeding = await axios.get("https://duxplorer.com/breeding/json");
+  const hatching = await axios.get("https://node2.duxplorer.com/hatching/json");
+  const breeding = await axios.get("https://node2.duxplorer.com/breeding/json");
   const ducksAmount =
     hatching.data.duckData.length + breeding.data.duckData.length;
   return `🦆 Total number of ducks: *${ducksAmount}*`;
 };
-
 export const numberOfDucksHatchedInTotalToday = async () => {
   const { data }: THatchingRespData = await axios.get(
-    "https://duxplorer.com/hatching/json"
+    "https://node2.duxplorer.com/hatching/json"
   );
 
   const todayDate = Date.parse(moment().startOf("day").toString());
@@ -62,19 +58,19 @@ export const numberOfDucksHatchedInTotalToday = async () => {
 
   return `🦆 <> 🦆 Number of ducks hatched in total / today: *${data.duckData.length}* / *${today}*`;
 };
-
 export const numberOfDucksBurnedToday = async () => {
-  const { data }: any = await axios.get("https://duxplorer.com/rebirth/json");
+  const { data }: any = await axios.get(
+    "https://node2.duxplorer.com/rebirth/json"
+  );
   const todayDate = Date.parse(moment().startOf("day").toString());
   const today = data.rebirthData.filter(
     (duck) => duck.timestamp >= todayDate
   ).length;
   return `🔥 Number of ducks burned in total / today : *${data.rebirthData.length}* / *${today}*`;
 };
-
 export const ducksSalesWeeklyInTotal = async () => {
   const { data }: TAuctionRespData = await axios.get(
-    "https://duxplorer.com/auction/json"
+    "https://node2.duxplorer.com/auction/json"
   );
   const today = new Date();
   const lastWeek = new Date(
@@ -116,10 +112,9 @@ export const ducksSalesWeeklyInTotal = async () => {
   // }️*${res.difference}%)* / *$${res.totalSales}*`;
   return `💰 Ducks sales weekly / in total: *$${res.lastWeekSales}* / *$${res.totalSales}*`;
 };
-
 export const topDuck = async () => {
   const { data }: TAuctionRespData = await axios.get(
-    "https://duxplorer.com/auction/json"
+    "https://node2.duxplorer.com/auction/json"
   );
   const yesterday = new Date(
     new Date().getTime() - 24 * 60 * 60 * 1000
@@ -140,7 +135,7 @@ export const topDuck = async () => {
   const {
     data: { cacheId },
   } = await axios.get(
-    `https://wavesducks.com/api/v1/preview/preload/duck/${topDuck.NFT}`
+    `https://wavesducks.com/api/v1/preview/preload/duck/${topDuck.NFT}?auctionId=${topDuck.auctionId}`
   );
   const link = `https://wavesducks.com/duck/${topDuck.NFT}?cacheId=${cacheId}`;
 
@@ -150,9 +145,10 @@ export const topDuck = async () => {
     res.inDollar
   )})*`;
 };
-
 export const numberOfDucksSoldThiWeekToday = async () => {
-  const { data }: any = await axios.get("https://duxplorer.com/auction/json");
+  const { data }: any = await axios.get(
+    "https://node2.duxplorer.com/auction/json"
+  );
   const todayDate = Date.parse(moment().startOf("day").toString());
   const thisWeekDate = Date.parse(moment().startOf("week").toString());
 
@@ -164,8 +160,7 @@ export const numberOfDucksSoldThiWeekToday = async () => {
   ).length;
   return `🦆 > 💵 Number of ducks sold this week / today:  *${twoWeekAgoDucks.length} / ${todayDucks}*`;
 };
-
-export const getStats = async (chatId?: number, messageId?: number) => {
+export const getStatsInfoFromBlockchain = async () => {
   const data: any = (
     await Promise.all(
       Object.entries({
@@ -212,36 +207,8 @@ ${data.ducksSalesWeeklyInTotal}
 
 ${data.topDuck}`;
 
-  if (chatId && messageId) {
-    await telegramService.telegram.editMessageText(msg, {
-      parse_mode: "Markdown",
-      chat_id: chatId,
-      message_id: messageId,
-    });
-    return;
-  }
-  await telegramService.sendChanelMessageWithDelay(
-    process.env.RU_GROUP_ID,
-    msg
-  );
-  await telegramService.sendChanelMessageWithDelay(
-    process.env.EN_GROUP_ID,
-    msg
-  );
-  await telegramService.sendChanelMessageWithDelay(
-    process.env.ES_GROUP_ID,
-    msg
-  );
-  await telegramService.sendChanelMessageWithDelay(
-    process.env.AR_GROUP_ID,
-    msg
-  );
-  await telegramService.sendChanelMessageWithDelay(
-    process.env.PER_GROUP_ID,
-    msg
-  );
+  return msg;
 };
-
 export const checkWalletAddress = async (
   address?: string
 ): Promise<boolean> => {

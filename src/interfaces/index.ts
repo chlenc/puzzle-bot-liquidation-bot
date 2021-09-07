@@ -1,16 +1,9 @@
+import { IAuctionDuck } from "../services/watcherService";
+
 export type TDataEntry = { key: string; type: string; value: string };
 
 export interface INodeResponse<T = TDataEntry[]> {
   data: T;
-}
-
-export interface IDuck {
-  timestamp: number;
-  duckName: string;
-  amount: number; //waves
-  NFT: string;
-  date: string;
-  buyType: "instantBuy" | "acceptBid";
 }
 
 export interface IHatchDuck {
@@ -21,7 +14,7 @@ export interface IHatchDuck {
   duckName: string;
 }
 
-export type TAuctionRespData = { data: { auctionData: IDuck[] } };
+export type TAuctionRespData = { data: { auctionData: IAuctionDuck[] } };
 export type THatchingRespData = { data: { duckData: IHatchDuck[] } };
 
 //
