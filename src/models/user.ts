@@ -12,15 +12,19 @@ export interface ITelegramUser {
   language_code?: string;
 }
 
-export interface IDuckUserParams {
+export interface IUserParams {
   walletAddress?: string;
   userDucks?: IDuckNft[];
   farmingDucks?: IDuckNft[];
   auctionDucks?: IDuckNft[];
   bids?: IBid[];
+  messagesNumber?: number;
+  messageHistory?: string;
+  invitationChannel?: string;
+  lastActivityDate?: Date;
 }
 
-export type TUserDocument = Document & ITelegramUser & IDuckUserParams;
+export type TUserDocument = Document & ITelegramUser & IUserParams;
 
 const UserSchema = new mongoose.Schema(
   {
@@ -34,6 +38,10 @@ const UserSchema = new mongoose.Schema(
     farmingDucks: DuckNftSchema,
     auctionDucks: DuckNftSchema,
     bids: BidSchema,
+    messagesNumber: { type: Number, required: false, default: 1 },
+    messageHistory: { type: String, required: false },
+    invitationChannel: { type: String, required: false },
+    lastActivityDate: { type: Date, required: false, default: new Date() },
   },
   { timestamps: true }
 );
