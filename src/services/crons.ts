@@ -13,7 +13,6 @@ import {
   getStatisticFromDB,
   updateStats,
 } from "../controllers/statsController";
-import twitterService from "./twitterService";
 
 const decimals = 1e8;
 
