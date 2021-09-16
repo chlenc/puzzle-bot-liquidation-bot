@@ -16,8 +16,7 @@ export const lastPriceForEgg = async () => {
   const rate = await getCurrentWavesRate();
   const price =
     Number.parseInt(data.data.B_asset_balance) /
-    100000000 /
-    (Number.parseInt(data.data.A_asset_balance) / 100);
+    Number.parseInt(data.data.A_asset_balance);
 
   return `🥚 Last price for EGG: *${price.toFixed(2)} WAVES ($${(
     rate * price
