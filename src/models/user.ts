@@ -24,7 +24,14 @@ export interface IUserParams {
   lastActivityDate?: Date;
 }
 
-export type TUserDocument = Document & ITelegramUser & IUserParams;
+export interface IReferralParams {
+  lang: "ENG" | "RUS" | "SPA";
+}
+
+export type TUserDocument = Document &
+  ITelegramUser &
+  IUserParams &
+  IReferralParams;
 
 const UserSchema = new mongoose.Schema(
   {
@@ -42,6 +49,7 @@ const UserSchema = new mongoose.Schema(
     messageHistory: { type: String, required: false },
     invitationChannel: { type: String, required: false },
     lastActivityDate: { type: Date, required: false, default: new Date() },
+    lang: { type: String, required: true, default: "ENG" },
   },
   { timestamps: true }
 );

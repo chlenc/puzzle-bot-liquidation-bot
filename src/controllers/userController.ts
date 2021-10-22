@@ -1,9 +1,19 @@
 import { ITelegramUser, IUserParams, User } from "../models/user";
+import { langs } from "../messages_lib";
 
 export const getUserById = async (id: number) => {
   const users = await User.find({ id: { $eq: id } }).exec();
   if (users.length == 0 || users[0].id !== id) return null;
   return users[0];
+};
+
+export const getUserLanguageById = async (id: number) => {
+  const user = await getUserById(id);
+  return langs[user.lang];
+};
+
+export const createUser = async (from: ITelegramUser) => {
+  return await User.create({ ...from });
 };
 
 export const updateUserActivityInfo = async (from: ITelegramUser) => {
