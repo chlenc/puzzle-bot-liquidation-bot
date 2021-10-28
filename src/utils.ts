@@ -26,3 +26,12 @@ export const prettifyNums = (x: number) => {
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export const createInlineButton = (
+  text: string,
+  key: string | number,
+  callback_data?: any
+) => ({
+  text,
+  callback_data: JSON.stringify({ key, data: callback_data }),
+});

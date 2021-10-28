@@ -1,5 +1,4 @@
 import telegramService from "../services/telegramService";
-import { getUserLanguageById } from "../controllers/userController";
 import { TUserDocument } from "../models/user";
 import { langs } from "../messages_lib";
 import { createInlineButton } from "../utils";
@@ -7,7 +6,7 @@ import { keys } from "../index";
 
 const { telegram: bot } = telegramService;
 
-const sendLangSelectMsg = async (user: TUserDocument) => {
+const sendStatisticsMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   await bot.sendMessage(user.id, lng.message.selectLanguage, {
     reply_markup: {
@@ -31,4 +30,4 @@ const sendLangSelectMsg = async (user: TUserDocument) => {
     },
   });
 };
-export default sendLangSelectMsg;
+export default sendStatisticsMsg;

@@ -22,6 +22,10 @@ import {
 import { getStatisticFromDB } from "./controllers/statsController";
 import { createMessage } from "./controllers/messageController";
 import sendLangSelectMsg from "./messages/sendLangSelectMsg";
+import sendWelcomeMsg from "./messages/sendWelcomeMsg";
+import sendWhatGetTokensForMessage from "./messages/sendWhatGetTokensForMessage";
+import sendLearMoreMsg from "./messages/sendLearMoreMsg";
+
 const { telegram: bot } = telegramService;
 const cron = require("node-cron");
 
@@ -53,23 +57,53 @@ bot.onText(/\/stats/, async ({ from, chat: { id } }) => {
   await bot.sendMessage(id, stats, { parse_mode });
 });
 
-//MESSAGES
-bot.on("message", async ({ from, text }) => {
-  const user = await getUserById(from.id);
-  const lng = langs[user.lang];
-  switch (text) {
-    //languages
-    case lng.button.enLngButtom:
-      await user.update({ lang: "ENG" }).exec();
-      break;
-    case lng.button.ruLngButtom:
-      await user.update({ lang: "RUS" }).exec();
-      break;
-    case lng.button.esLngButtom:
-      await user.update({ lang: "SPA" }).exec();
-      break;
-  }
+export enum keys {
+  lang,
+  alreadyWithYou,
+  learnMore,
+  getRefLink,
+  balance,
+  affiliateLink,
+  influencers,
+  myRefs,
+  faq,
+  officialResources,
+  statistics,
+  chat,
+}
+
+bot.on("callback_query", async ({ from, message, data: raw }) => {
+  try {
+    const { key, data } = JSON.parse(raw);
+    const user = await getUserById(from.id);
+    switch (key) {
+      case keys.lang:
+        await user.update(data).exec();
+        await bot.deleteMessage(from.id, String(message.message_id));
+        await sendWelcomeMsg(user);
+        break;
+      case keys.alreadyWithYou:
+        await bot.deleteMessage(from.id, String(message.message_id));
+        await sendWhatGetTokensForMessage(user);
+        break;
+      case keys.learnMore:
+        await bot.deleteMessage(from.id, String(message.message_id));
+        await sendLearMoreMsg(user);
+    }
+  } catch (e) {}
 });
+
+// you can use MESSAGES template to handle text callbacks
+// bot.on("message", async ({ from, text, message_id }) => {
+// const user = await getUserById(from.id);
+// const lng = langs[user.lang];
+// switch (text) {
+// case lng.button.enLngButtom:
+//   await user.update({ lang: "ENG" }).exec();
+//   await sendWelcomeMsg(user);
+//   break;
+// }
+// });
 
 // todo refactor this shit 👇🏻
 
