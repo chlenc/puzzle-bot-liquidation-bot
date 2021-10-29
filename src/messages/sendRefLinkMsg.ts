@@ -7,7 +7,7 @@ import { createInlineButton } from "../utils";
 
 const { telegram: bot } = telegramService;
 
-const sendStatisticsMsg = async (user: TUserDocument) => {
+const sendRefLinkMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   const stats = await getStatisticFromDB();
   await bot.sendMessage(user.id, lng.button.statistics + stats, {
@@ -17,4 +17,4 @@ const sendStatisticsMsg = async (user: TUserDocument) => {
     },
   });
 };
-export default sendStatisticsMsg;
+export default sendRefLinkMsg;

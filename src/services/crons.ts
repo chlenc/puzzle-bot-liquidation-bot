@@ -121,11 +121,6 @@ export const watchOnAuction = async () => {
         groupId: process.env.AR_GROUP_ID,
         message: enMsg,
       },
-      {
-        groupId: "383909141",
-        // groupId: process.env.PER_GROUP_ID,
-        message: enMsg,
-      },
     ];
 
     for (let index in groups) {

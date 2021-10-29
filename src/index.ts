@@ -25,6 +25,9 @@ import sendLangSelectMsg from "./messages/sendLangSelectMsg";
 import sendWelcomeMsg from "./messages/sendWelcomeMsg";
 import sendWhatGetTokensForMessage from "./messages/sendWhatGetTokensForMessage";
 import sendLearMoreMsg from "./messages/sendLearMoreMsg";
+import sendStatisticsMsg from "./messages/sendStatisticsMsg";
+import sendOfficialResourcesMsg from "./messages/sendOfficialResourcesMsg";
+import sendFAQMsg from "./messages/sendFAQMsg";
 
 const { telegram: bot } = telegramService;
 const cron = require("node-cron");
@@ -67,7 +70,7 @@ export enum keys {
   influencers,
   myRefs,
   faq,
-  officialResources,
+  resources,
   statistics,
   chat,
 }
@@ -89,6 +92,19 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
       case keys.learnMore:
         await bot.deleteMessage(from.id, String(message.message_id));
         await sendLearMoreMsg(user);
+        break;
+      case keys.statistics:
+        await bot.deleteMessage(from.id, String(message.message_id));
+        await sendStatisticsMsg(user);
+        break;
+      case keys.resources:
+        // await bot.deleteMessage(from.id, String(message.message_id));
+        await sendOfficialResourcesMsg(user);
+        break;
+      case keys.faq:
+        await bot.deleteMessage(from.id, String(message.message_id));
+        await sendFAQMsg(user);
+        break;
     }
   } catch (e) {}
 });
@@ -154,6 +170,6 @@ cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
 
 cron.schedule("* * * * *", watchOnAuction);
 
-cron.schedule("*/5 * * * *", watchOnDucks);
+// cron.schedule("*/5 * * * *", watchOnDucks);
 
 process.stdout.write("Bot has been started ✅ ");

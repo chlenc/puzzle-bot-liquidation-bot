@@ -1,20 +1,18 @@
 import telegramService from "../services/telegramService";
 import { TUserDocument } from "../models/user";
 import { langs } from "../messages_lib";
-import { getStatisticFromDB } from "../controllers/statsController";
 import { keys } from "../index";
 import { createInlineButton } from "../utils";
 
 const { telegram: bot } = telegramService;
 
-const sendStatisticsMsg = async (user: TUserDocument) => {
+const sendFAQMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
-  const stats = await getStatisticFromDB();
-  await bot.sendMessage(user.id, lng.button.statistics + stats, {
+  await bot.sendMessage(user.id, lng.button.faq, {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [[createInlineButton(lng.button.back, keys.learnMore)]],
     },
   });
 };
-export default sendStatisticsMsg;
+export default sendFAQMsg;

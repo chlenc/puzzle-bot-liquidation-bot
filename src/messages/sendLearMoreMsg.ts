@@ -11,12 +11,12 @@ const sendLearMoreMsg = async (user: TUserDocument) => {
   await bot.sendMessage(user.id, lng.message.toolbar, {
     reply_markup: {
       inline_keyboard: [
-        [createInlineButton(lng.button.balanceBtn, keys.balance)],
+        // [createInlineButton(lng.button.balanceBtn, keys.balance)],
         [createInlineButton(lng.button.affiliateBtn, keys.affiliateLink)],
-        [createInlineButton(lng.button.influencers, keys.influencers)],
+        // [createInlineButton(lng.button.influencers, keys.influencers)],
         [createInlineButton(lng.button.MyReferals, keys.myRefs)],
         [createInlineButton(lng.button.faq, keys.faq)],
-        [createInlineButton(lng.button.resources, keys.officialResources)],
+        [createInlineButton(lng.button.resources, keys.resources)],
         [createInlineButton(lng.button.statistics, keys.statistics)],
         [createInlineButton(lng.button.chat, keys.chat)],
       ],

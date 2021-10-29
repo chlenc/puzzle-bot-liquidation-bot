@@ -42,7 +42,7 @@ export const langs = {
       ruLngButtom: "🇷🇺Русский",
       enLngButtom: "🇬🇧 English",
       esLngButtom: "🇪🇸Espanol",
-      joinChat: "👉Couch to chat",
+      joinChat: "👉Join to chat",
       alreadyWithYou: "I'm already with you",
       learnMore: "To learn more",
       getRefLink: "Get the reference reference",
@@ -59,6 +59,7 @@ export const langs = {
       enterWalletBtn: "Enter your address",
       withdraw: "💸 Display Eggs tokens",
       changeAddress: "Change address",
+      back: "Go back",
     },
   },
   RUS: {
@@ -104,6 +105,7 @@ export const langs = {
       enterWalletBtn: "Введи свой адрес",
       withdraw: "💸 Вывести токены EGGs",
       changeAddress: "Изменить адрес",
+      back: "Назад",
     },
   },
   SPA: {
@@ -149,6 +151,7 @@ export const langs = {
       enterWalletBtn: "Ingrese su dirección",
       withdraw: "💸 Mostrar tokens de huevos",
       changeAddress: "Cambiar dirección",
+      back: "Назад",
     },
   },
 };

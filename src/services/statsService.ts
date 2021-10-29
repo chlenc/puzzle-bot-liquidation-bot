@@ -24,11 +24,17 @@ export const lastPriceForEgg = async () => {
 };
 export const totalFarmingPower = async () => {
   const { data } = await axios.get("https://node2.duxplorer.com/farming/json");
-  const res = data.farmData.reduce(
-    (acc, { farmingPower }) => acc + farmingPower,
-    0
-  );
-  return `💪 Total farming power: *${res}*`;
+  try {
+    const res = data.farmData.reduce(
+      (acc, { farmingPower }) => acc + farmingPower,
+      0
+    );
+    return `💪 Total farming power: *${res}*`;
+  } catch (e) {
+    console.log("totalFarmingPower", data);
+    console.log(e);
+    return "";
+  }
 };
 export const lastDuckPriceForHatching = async () => {
   const { data } = await axios.get(
@@ -186,7 +192,6 @@ export const getStatsInfoFromBlockchain = async () => {
   }, {} as Record<string, any>);
 
   const msg = `
-  *Daily Ducks Stats:*
   
 ${data.lastPriceForEgg}
 
