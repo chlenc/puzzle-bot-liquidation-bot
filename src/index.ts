@@ -42,7 +42,7 @@ bot.on("message", async (msg) => {
   const user = await getUserById(msg.from.id);
   if (user != null) {
     await updateUserActivityInfo(msg.from);
-    await createMessage(msg.from.id, msg.text);
+    msg.chat.type === "private" && (await createMessage(msg.from.id, msg.text));
   }
 });
 
