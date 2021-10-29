@@ -11,7 +11,9 @@ const sendMyRefsListMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   let list = await getMyRefsList(user.id);
   if (list === "") {
-    list = "c";
+    list = lng.message.noRefs;
+  } else {
+    list = lng.button.MyReferals + list;
   }
   await bot.sendMessage(user.id, list, {
     reply_markup: {

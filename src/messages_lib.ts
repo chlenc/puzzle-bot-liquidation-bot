@@ -36,6 +36,7 @@ export const langs = {
       invalidWallet: "Invalid address",
       resources:
         "💼 Official links\n\nTelegram chat: https://t.me/duckhunters_ru\nWebsite: https://wavesducks.com/\nTwitter: https://twitter.com/wavesducks\nMedium: https://medium.com/wavesprotocol/wavesducks/home\n",
+      noRefs: "You don't have any referrals for now",
     },
     button: {
       ruLngButtom: "🇷🇺Русский",
@@ -83,6 +84,7 @@ export const langs = {
       invalidWallet: "Неверный адрес",
       resources:
         "💼 Официальные ресурсы\n\nТелеграм чат: https://t.me/duckhunters_ru\nСайт: https://wavesducks.com/\nTwitter: https://twitter.com/wavesducks\nMedium: https://medium.com/wavesprotocol/wavesducks/home\n",
+      noRefs: "У вас пока нет рефералов",
     },
     button: {
       ruLngButtom: "🇷🇺Русский",
@@ -129,6 +131,7 @@ export const langs = {
       invalidWallet: "Dirección inválida",
       resources:
         "💼 Enlaces oficiales\n\nChat de Telegram: https://t.me/duckshunterses\nPágina web: https://wavesducks.com/\nTwitter: https://twitter.com/wavesducksspain\nMedium: https://medium.com/wavesprotocol/wavesducks/home",
+      noRefs: "No tienes referencias por ahora",
     },
     button: {
       ruLngButtom: "🇷🇺Русский",
