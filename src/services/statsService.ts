@@ -1,7 +1,9 @@
 import axios from "axios";
-import { prettifyNums } from "../utils";
+import { getDuckName, prettifyNums } from "../utils";
 import * as moment from "moment";
 import { decimals, TAuctionRespData, THatchingRespData } from "../interfaces";
+import { ITelegramUser, IUserParams, User } from "../models/user";
+import { getUserById } from "../controllers/userController";
 
 export const getCurrentWavesRate = async () => {
   const { data } = await axios.get(
@@ -227,4 +229,40 @@ export const checkWalletAddress = async (
     console.warn(e);
   }
   return !!res;
+};
+
+function getMostFrequentInfluencers(arr: IUserParams[]) {
+  const hashmap = arr.reduce((acc, val) => {
+    acc[val.ref] = (acc[val.ref] || 0) + 1;
+    return acc;
+  }, {}) as any;
+  const array = [];
+  for (let key in hashmap) {
+    array.push({
+      userId: key,
+      value: hashmap[key],
+    });
+  }
+  const res = array
+    .sort((a, b) => (a.value > b.value ? 1 : b.value < a.value ? -1 : 0))
+    .splice(0, 10);
+  return res.map((a) => a.userId);
+}
+
+export const getTopInfluencers = async () => {
+  const todayDate = moment().startOf("day").toISOString();
+  const userAddedToday = await User.find({
+    createdAt: {
+      $gte: todayDate,
+    },
+    ref: { $exists: true },
+  });
+  const influencers: Array<string> = getMostFrequentInfluencers(userAddedToday);
+  let res = "";
+  for (let index in influencers) {
+    const user = await getUserById(+influencers[index]);
+    const num = +index + 1;
+    res += `\n${num} - @${user.username}`;
+  }
+  return res;
 };

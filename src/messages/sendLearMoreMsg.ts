@@ -13,12 +13,12 @@ const sendLearMoreMsg = async (user: TUserDocument) => {
       inline_keyboard: [
         // [createInlineButton(lng.button.balanceBtn, keys.balance)],
         [createInlineButton(lng.button.affiliateBtn, keys.affiliateLink)],
-        // [createInlineButton(lng.button.influencers, keys.influencers)],
+        [createInlineButton(lng.button.influencers, keys.influencers)],
         [createInlineButton(lng.button.MyReferals, keys.myRefs)],
-        [createInlineButton(lng.button.faq, keys.faq)],
+        [{ text: lng.button.faq, url: "https://wavesducks.com/#faq" }],
         [createInlineButton(lng.button.resources, keys.resources)],
         [createInlineButton(lng.button.statistics, keys.statistics)],
-        [createInlineButton(lng.button.chat, keys.chat)],
+        [{ text: lng.button.chat, url: lng.button.telegramLink }],
       ],
     },
   });

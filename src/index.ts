@@ -5,21 +5,20 @@ import {
   getCurrentWavesRate,
 } from "./services/statsService";
 import {
-  createUser,
   findByTelegramIdAndUpdate,
   getUserById,
   updateUserActivityInfo,
 } from "./controllers/userController";
 import { User } from "./models/user";
-import msg, { langs } from "./messages_lib";
+import msg from "./messages_lib";
 import { initMongo } from "./services/mongo";
 import {
   sendStatisticMessageToChannels,
   watchOnAuction,
-  watchOnDucks,
+  watchOnInfluencers,
   watchOnStats,
 } from "./services/crons";
-import { getStatisticFromDB } from "./controllers/statsController";
+import { getStatisticFromDB, STATISTIC } from "./controllers/statsController";
 import { createMessage } from "./controllers/messageController";
 import sendLangSelectMsg from "./messages/sendLangSelectMsg";
 import sendWelcomeMsg from "./messages/sendWelcomeMsg";
@@ -27,7 +26,10 @@ import sendWhatGetTokensForMessage from "./messages/sendWhatGetTokensForMessage"
 import sendLearMoreMsg from "./messages/sendLearMoreMsg";
 import sendStatisticsMsg from "./messages/sendStatisticsMsg";
 import sendOfficialResourcesMsg from "./messages/sendOfficialResourcesMsg";
-import sendFAQMsg from "./messages/sendFAQMsg";
+import sendMyRefsListMsg from "./messages/sendMyRefsListMsg";
+import sendTopInfluencersMsg from "./messages/sendTopInfluencersMsg";
+import sendFirstRefLinkMsg from "./messages/sendFirstRefLinkMsg";
+import sendAffiliateLinkMsg from "./messages/sendAffiliateLinkMsg";
 
 const { telegram: bot } = telegramService;
 const cron = require("node-cron");
@@ -36,9 +38,29 @@ initMongo().then();
 
 const parse_mode = "Markdown";
 
+bot.on("message", async (msg) => {
+  const user = await getUserById(msg.from.id);
+  if (user != null) {
+    await updateUserActivityInfo(msg.from);
+    await createMessage(msg.from.id, msg.text);
+  }
+});
+
 //COMMANDS
-bot.onText(/\/start/, async ({ from }) => {
-  const user = await createUser(from);
+bot.onText(/\/start[ \t]*(.*)/, async ({ chat, from }, match) => {
+  await updateUserActivityInfo(from);
+  const user = await getUserById(from.id);
+  if (user != null && match[1]) {
+    if (!isNaN(parseFloat(match[1]))) {
+      await User.findByIdAndUpdate(user._id, {
+        ref: +match[1],
+      });
+    } else {
+      await User.findByIdAndUpdate(user._id, {
+        invitationChannel: match[1],
+      });
+    }
+  }
   await sendLangSelectMsg(user);
 });
 
@@ -56,7 +78,7 @@ bot.onText(/\/version/, async ({ chat: { id } }) => {
 });
 
 bot.onText(/\/stats/, async ({ from, chat: { id } }) => {
-  const stats = await getStatisticFromDB();
+  const stats = await getStatisticFromDB(STATISTIC.GAME);
   await bot.sendMessage(id, stats, { parse_mode });
 });
 
@@ -69,7 +91,6 @@ export enum keys {
   affiliateLink,
   influencers,
   myRefs,
-  faq,
   resources,
   statistics,
   chat,
@@ -79,65 +100,38 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
   try {
     const { key, data } = JSON.parse(raw);
     const user = await getUserById(from.id);
+    await bot.deleteMessage(from.id, String(message.message_id));
     switch (key) {
       case keys.lang:
         await user.update(data).exec();
-        await bot.deleteMessage(from.id, String(message.message_id));
-        await sendWelcomeMsg(user);
+        await sendWelcomeMsg(user, data);
         break;
       case keys.alreadyWithYou:
-        await bot.deleteMessage(from.id, String(message.message_id));
         await sendWhatGetTokensForMessage(user);
         break;
+      case keys.getRefLink:
+        await sendFirstRefLinkMsg(user);
+        break;
+      case keys.affiliateLink:
+        await sendAffiliateLinkMsg(user);
+        break;
       case keys.learnMore:
-        await bot.deleteMessage(from.id, String(message.message_id));
         await sendLearMoreMsg(user);
         break;
       case keys.statistics:
-        await bot.deleteMessage(from.id, String(message.message_id));
         await sendStatisticsMsg(user);
         break;
       case keys.resources:
-        // await bot.deleteMessage(from.id, String(message.message_id));
         await sendOfficialResourcesMsg(user);
         break;
-      case keys.faq:
-        await bot.deleteMessage(from.id, String(message.message_id));
-        await sendFAQMsg(user);
+      case keys.myRefs:
+        await sendMyRefsListMsg(user);
+        break;
+      case keys.influencers:
+        await sendTopInfluencersMsg(user);
         break;
     }
   } catch (e) {}
-});
-
-// you can use MESSAGES template to handle text callbacks
-// bot.on("message", async ({ from, text, message_id }) => {
-// const user = await getUserById(from.id);
-// const lng = langs[user.lang];
-// switch (text) {
-// case lng.button.enLngButtom:
-//   await user.update({ lang: "ENG" }).exec();
-//   await sendWelcomeMsg(user);
-//   break;
-// }
-// });
-
-// todo refactor this shit 👇🏻
-
-// bot.onText(/\/start[ \t]*(.*)/, async ({ chat, from }, match) => {
-//   const user = await getUserById(from.id);
-//   user != null &&
-//     match[1] &&
-//     (await User.findByIdAndUpdate(user._id, {
-//       invitationChannel: match[1],
-//     }));
-//   await bot.sendMessage(chat.id, msg.welcome, {
-//     parse_mode,
-//   });
-// });
-
-bot.on("message", async (msg) => {
-  await createMessage(msg.from.id, msg.text);
-  await updateUserActivityInfo(msg.from);
 });
 
 bot.onText(/\/address[ \t](.+)/, async ({ chat, from }, match) => {
@@ -165,6 +159,8 @@ bot.onText(/\/cancel/, async ({ chat, from }) => {
 });
 
 cron.schedule("* * * * *", watchOnStats);
+
+cron.schedule("0 * * * *", watchOnInfluencers);
 
 cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
 

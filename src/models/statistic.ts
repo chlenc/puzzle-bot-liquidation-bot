@@ -10,6 +10,7 @@ export type TStatisticDocument = Document & IStatistic;
 const StatisticSchema = new mongoose.Schema(
   {
     value: { type: String, required: true },
+    key: { type: String, required: true },
   },
   { timestamps: true }
 );

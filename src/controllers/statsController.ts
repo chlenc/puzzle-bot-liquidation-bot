@@ -1,19 +1,24 @@
 import { Statistic } from "../models/statistic";
 
-export const updateStats = async (statsValue: string) => {
-  const stats = await Statistic.findOne().exec();
+export enum STATISTIC {
+  GAME = "GAME",
+  INFLUENCERS = "INFLUENCERS",
+}
+
+export const updateStats = async (value: string, key: string) => {
+  const stats = await Statistic.findOne({ key }).exec();
   if (stats == null) {
-    await Statistic.create({ value: statsValue });
+    await Statistic.create({ value, key });
     return;
   } else {
     await Statistic.findByIdAndUpdate(stats.id, {
-      value: statsValue,
+      value,
     });
   }
 };
 
-export const getStatisticFromDB = async (): Promise<string> => {
-  const stats = await Statistic.findOne().exec();
+export const getStatisticFromDB = async (key: string): Promise<string> => {
+  const stats = await Statistic.findOne({ key }).exec();
   if (stats == null) return "";
   return stats.value;
 };

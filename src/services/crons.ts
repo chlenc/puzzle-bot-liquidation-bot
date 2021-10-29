@@ -2,6 +2,7 @@ import { User } from "../models/user";
 import {
   getCurrentWavesRate,
   getStatsInfoFromBlockchain,
+  getTopInfluencers,
 } from "./statsService";
 import axios from "axios";
 import telegramService from "./telegramService";
@@ -11,6 +12,7 @@ import { compareAllFields } from "./comparingService";
 import { updateUserDetails } from "./updateService";
 import {
   getStatisticFromDB,
+  STATISTIC,
   updateStats,
 } from "../controllers/statsController";
 
@@ -136,11 +138,14 @@ export const watchOnAuction = async () => {
 };
 
 export const watchOnStats = async () => {
-  await updateStats(await getStatsInfoFromBlockchain());
+  await updateStats(await getStatsInfoFromBlockchain(), STATISTIC.GAME);
+};
+export const watchOnInfluencers = async () => {
+  await updateStats(await getTopInfluencers(), STATISTIC.INFLUENCERS);
 };
 
 export const sendStatisticMessageToChannels = async () => {
-  const msg = await getStatisticFromDB();
+  const msg = await getStatisticFromDB(STATISTIC.GAME);
   await telegramService.sendChanelMessageWithDelay(
     process.env.RU_GROUP_ID,
     msg

@@ -3,7 +3,7 @@ import { langs } from "../messages_lib";
 
 export const getUserById = async (id: number) => {
   const users = await User.find({ id: { $eq: id } }).exec();
-  if (users.length == 0 || users[0].id !== id) return null;
+  if (users.length == 0 || (users[0] && users[0].id !== id)) return null;
   return users[0];
 };
 
@@ -12,9 +12,9 @@ export const getUserLanguageById = async (id: number) => {
   return langs[user.lang];
 };
 
-export const createUser = async (from: ITelegramUser) => {
-  return await User.create({ ...from });
-};
+// export const createUser = async (from: ITelegramUser) => {
+//   return await User.create({ ...from });
+// };
 
 export const updateUserActivityInfo = async (from: ITelegramUser) => {
   let user = await getUserById(from.id);
@@ -44,4 +44,17 @@ export const findByTelegramIdAndUpdate = async (
     messagesNumber: user.messagesNumber + 1,
     lastActivityDate: new Date(),
   });
+};
+
+export const getMyRefsCount = async (userId: number) => {
+  const users = await User.find({ ref: userId });
+  return users.length;
+};
+
+export const getMyRefsList = async (userId: number) => {
+  const users = await User.find({ ref: userId });
+  return users.reduce(
+    (acc, last, index) => (acc += `\n${+index + 1} - @${last.username}`),
+    "" as string
+  );
 };

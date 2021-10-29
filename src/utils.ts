@@ -35,3 +35,6 @@ export const createInlineButton = (
   text,
   callback_data: JSON.stringify({ key, data: callback_data }),
 });
+
+export const diffDays = (date, otherDate) =>
+  Math.ceil(Math.abs(date - otherDate) / (1000 * 60 * 60 * 24));

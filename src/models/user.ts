@@ -22,6 +22,8 @@ export interface IUserParams {
   messageHistory?: string;
   invitationChannel?: string;
   lastActivityDate?: Date;
+  ref?: number;
+  myRefs?: number[];
 }
 
 export interface IReferralParams {
@@ -50,6 +52,8 @@ const UserSchema = new mongoose.Schema(
     invitationChannel: { type: String, required: false },
     lastActivityDate: { type: Date, required: false, default: new Date() },
     lang: { type: String, required: true, default: "ENG" },
+    ref: { type: Number, required: false },
+    myRefs: { type: Number, required: false },
   },
   { timestamps: true }
 );
