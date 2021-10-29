@@ -51,7 +51,7 @@ bot.onText(/\/start[ \t]*(.*)/, async ({ chat, from }, match) => {
   await updateUserActivityInfo(from);
   const user = await getUserById(from.id);
   if (user != null && match[1]) {
-    if (!isNaN(parseFloat(match[1]))) {
+    if (!isNaN(parseFloat(match[1])) && +match[1] !== from.id) {
       await User.findByIdAndUpdate(user._id, {
         ref: +match[1],
       });
