@@ -87,13 +87,11 @@ export enum keys {
   alreadyWithYou,
   learnMore,
   getRefLink,
-  balance,
   affiliateLink,
   influencers,
   myRefs,
   resources,
   statistics,
-  chat,
 }
 
 bot.on("callback_query", async ({ from, message, data: raw }) => {

@@ -13,7 +13,7 @@ const sendWelcomeMsg = async (user: TUserDocument, data) => {
   await bot.sendMessage(user.id, lng.message.joinToCommunity, {
     reply_markup: {
       inline_keyboard: [
-        [{ text: lng.button.joinChat, url: "https://t.me/WavesDucksBot" }],
+        [{ text: lng.button.joinChat, url: lng.button.telegramLink }],
         [createInlineButton(lng.button.alreadyWithYou, keys.alreadyWithYou)],
       ],
     },
