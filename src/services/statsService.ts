@@ -25,16 +25,17 @@ export const lastPriceForEgg = async () => {
   ).toFixed(2)})*`;
 };
 export const totalFarmingPower = async () => {
-  const { data } = await axios.get("https://node2.duxplorer.com/farming/json");
   try {
+    const { data } = await axios.get(
+      "https://node2.duxplorer.com/farming/json"
+    );
     const res = data.farmData.reduce(
       (acc, { farmingPower }) => acc + farmingPower,
       0
     );
     return `💪 Total farming power: *${res}*`;
   } catch (e) {
-    console.log("totalFarmingPower", data);
-    console.log(e);
+    console.log("totalFarmingPower", e);
     return "";
   }
 };
@@ -139,18 +140,23 @@ export const topDuck = async () => {
     inDollar: (topDuck.amount / decimals) * rate,
   };
 
-  const {
-    data: { cacheId },
-  } = await axios.get(
-    `https://wavesducks.com/api/v1/preview/preload/duck/${res.NFT}?auctionId=${res.auctionId}`
-  );
-  const link = `https://wavesducks.com/duck/${topDuck.NFT}?cacheId=${cacheId}`;
+  try {
+    const {
+      data: { cacheId },
+    } = await axios.get(
+      `https://wavesducks.com/api/v1/preview/preload/duck/${res.NFT}?auctionId=${res.auctionId}`
+    );
+    const link = `https://wavesducks.com/duck/${topDuck.NFT}?cacheId=${cacheId}`;
 
-  return `🤩 Top Duck [${
-    res.duckRealName
-  }](${link}) for last 24 hours sold for *${res.amount}* Waves *($${Math.round(
-    res.inDollar
-  )})*`;
+    return `🤩 Top Duck [${
+      res.duckRealName
+    }](${link}) for last 24 hours sold for *${
+      res.amount
+    }* Waves *($${Math.round(res.inDollar)})*`;
+  } catch (e) {
+    console.log(e);
+    return "";
+  }
 };
 export const numberOfDucksSoldThiWeekToday = async () => {
   const { data }: any = await axios.get(

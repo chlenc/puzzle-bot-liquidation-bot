@@ -14,7 +14,6 @@ import msg from "./messages_lib";
 import { initMongo } from "./services/mongo";
 import {
   sendStatisticMessageToChannels,
-  watchOnAuction,
   watchOnInfluencers,
   watchOnStats,
 } from "./services/crons";
@@ -162,7 +161,7 @@ cron.schedule("0 * * * *", watchOnInfluencers);
 
 cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
 
-cron.schedule("* * * * *", watchOnAuction);
+// cron.schedule("* * * * *", watchOnAuction);
 
 // cron.schedule("*/5 * * * *", watchOnDucks);
 

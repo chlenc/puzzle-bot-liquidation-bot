@@ -53,8 +53,11 @@ export const getMyRefsCount = async (userId: number) => {
 
 export const getMyRefsList = async (userId: number) => {
   const users = await User.find({ ref: userId });
-  return users.reduce(
-    (acc, last, index) => (acc += `\n${+index + 1} - @${last.username}`),
-    "" as string
-  );
+  return users.reduce((acc, { username, first_name, last_name, id }, index) => {
+    const name =
+      username != null
+        ? `@${username}`
+        : `${first_name || ""} ${last_name || ""}`;
+    return `${acc}\n${+index + 1} - <a href="tg://user?id=${id}">${name}</a>`;
+  }, "");
 };

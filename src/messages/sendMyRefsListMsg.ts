@@ -15,10 +15,15 @@ const sendMyRefsListMsg = async (user: TUserDocument) => {
   } else {
     list = lng.button.MyReferals + list;
   }
-  await bot.sendMessage(user.id, list, {
-    reply_markup: {
-      inline_keyboard: [[createInlineButton(lng.button.back, keys.learnMore)]],
-    },
-  });
+  await bot
+    .sendMessage(user.id, list, {
+      parse_mode: "HTML",
+      reply_markup: {
+        inline_keyboard: [
+          [createInlineButton(lng.button.back, keys.learnMore)],
+        ],
+      },
+    })
+    .catch((e) => console.log(e.message));
 };
 export default sendMyRefsListMsg;
