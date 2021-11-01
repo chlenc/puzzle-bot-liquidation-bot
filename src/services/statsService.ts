@@ -141,12 +141,13 @@ export const topDuck = async () => {
   };
 
   try {
-    const {
-      data: { cacheId },
-    } = await axios.get(
-      `https://wavesducks.com/api/v1/preview/preload/duck/${res.NFT}?auctionId=${res.auctionId}`
-    );
-    const link = `https://wavesducks.com/duck/${topDuck.NFT}?cacheId=${cacheId}`;
+    // const {
+    //   data: { cacheId },
+    // } = await axios.get(
+    //   `https://wavesducks.com/api/v1/preview/preload/duck/${res.NFT}?auctionId=${res.auctionId}`
+    // );
+    // const link = `https://wavesducks.com/duck/${topDuck.NFT}?cacheId=${cacheId}`;
+    const link = `https://wavesducks.com/duck/${topDuck.NFT}`;
 
     return `🤩 Top Duck [${
       res.duckRealName
