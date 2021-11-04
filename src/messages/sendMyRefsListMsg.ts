@@ -13,17 +13,10 @@ const sendMyRefsListMsg = async (user: TUserDocument) => {
   if (list === "") {
     list = lng.message.noRefs;
   } else {
-    list = lng.button.MyReferals + list;
+    list = lng.button.myReferals + list;
   }
   await bot
-    .sendMessage(user.id, list, {
-      parse_mode: "HTML",
-      reply_markup: {
-        inline_keyboard: [
-          [createInlineButton(lng.button.back, keys.learnMore)],
-        ],
-      },
-    })
+    .sendMessage(user.id, list, { parse_mode: "HTML" })
     .catch((e) => console.log(e.message));
 };
 export default sendMyRefsListMsg;

@@ -9,9 +9,9 @@ const { telegram: bot } = telegramService;
 const sendOfficialResourcesMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   await bot.sendMessage(user.id, lng.message.resources, {
-    reply_markup: {
-      inline_keyboard: [[createInlineButton(lng.button.back, keys.learnMore)]],
-    },
+    // reply_markup: {
+    //   inline_keyboard: [[createInlineButton(lng.button.back, keys.learnMore)]],
+    // },
   });
 };
 export default sendOfficialResourcesMsg;

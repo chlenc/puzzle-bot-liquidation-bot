@@ -7,15 +7,12 @@ import { keys } from "../index";
 
 const { telegram: bot } = telegramService;
 
-const sendWelcomeMsg = async (user: TUserDocument, lang) => {
-  const lng = langs[lang];
-  await bot.sendMessage(user.id, lng.message.welcome, {
+const sendJoinToCommunityMsg = async (user: TUserDocument, lang?: string) => {
+  const lng = langs[lang != null ? lang : user.lang];
+  await bot.sendMessage(user.id, lng.message.joinToCommunity, {
     reply_markup: {
-      inline_keyboard: [
-        [{ text: lng.button.joinChat, url: lng.button.telegramLink }],
-        // [createInlineButton(lng.button.alreadyWithYou, keys.alreadyWithYou)],
-      ],
+      keyboard: [[{ text: lng.button.alreadyWithYou }]],
     },
   });
 };
-export default sendWelcomeMsg;
+export default sendJoinToCommunityMsg;

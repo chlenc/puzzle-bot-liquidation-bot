@@ -13,10 +13,11 @@ const sendAffiliateLinkMsg = async (user) => {
   const friends = await getMyRefsCount(user.id);
 
   const changeValues = {
-    daysWithUs: days,
-    sponsorName: sponsor ? sponsor.username : "-",
-    invitedFriends: friends,
-    userId: user.id,
+    "{{daysWithUs}}": days,
+    "{{sponsorName}}": sponsor ? sponsor.username : "-",
+    "{{invitedFriends}}": friends,
+    "{{userId}}": user.id,
+    "{{botName}}": process.env.BOT_NAME,
   };
 
   const re = new RegExp(Object.keys(changeValues).join("|"), "gi");
@@ -27,9 +28,9 @@ const sendAffiliateLinkMsg = async (user) => {
 
   await bot.sendMessage(user.id, str, {
     parse_mode: "Markdown",
-    reply_markup: {
-      inline_keyboard: [[createInlineButton(lng.button.back, keys.learnMore)]],
-    },
+    // reply_markup: {
+    //   inline_keyboard: [[createInlineButton(lng.button.back, keys.learnMore)]],
+    // },
   });
 };
 export default sendAffiliateLinkMsg;

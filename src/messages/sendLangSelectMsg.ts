@@ -10,23 +10,28 @@ const sendLangSelectMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   await bot.sendMessage(user.id, lng.message.selectLanguage, {
     reply_markup: {
-      inline_keyboard: [
-        [
-          createInlineButton(lng.button.enLngButtom, keys.lang, {
-            lang: "ENG",
-          }),
-        ],
-        [
-          createInlineButton(lng.button.ruLngButtom, keys.lang, {
-            lang: "RUS",
-          }),
-        ],
-        [
-          createInlineButton(lng.button.esLngButtom, keys.lang, {
-            lang: "SPA",
-          }),
-        ],
+      keyboard: [
+        [{ text: lng.button.enLngButton }],
+        [{ text: lng.button.ruLngButton }],
+        [{ text: lng.button.esLngButton }],
       ],
+      // inline_keyboard: [
+      //   [
+      //     createInlineButton(lng.button.ruLngButton, keys.lang, {
+      //       lang: "ENG",
+      //     }),
+      //   ],
+      //   [
+      //     createInlineButton(lng.button.enLngButton, keys.lang, {
+      //       lang: "RUS",
+      //     }),
+      //   ],
+      //   [
+      //     createInlineButton(lng.button.esLngButton, keys.lang, {
+      //       lang: "SPA",
+      //     }),
+      //   ],
+      // ],
     },
   });
 };
