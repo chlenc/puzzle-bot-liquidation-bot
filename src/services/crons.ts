@@ -86,28 +86,27 @@ export const watchOnAuction = async () => {
       const usdAmount = (wavesAmount * rate).toFixed(2);
       let duckNumber = "-";
       let duckCacheId = "";
-      // try {
-      //   const { data: numberRawData } = await axios.get(
-      //     `https://wavesducks.com/api/v0/achievements?ids=${duck.NFT}`
-      //   );
-      //   const start = new Date().getTime();
-      //   const {
-      //     data: { cacheId },
-      //   } = await axios.get(
-      //     `https://wavesducks.com/api/v1/preview/preload/duck/${duck.NFT}?actionId=${duck.auctionId}`
-      //   );
-      //   console.log(
-      //     `⏰ preload time for cacheId ${cacheId} and NFT ${duck.NFT} is ${
-      //       (new Date().getTime() - start) / 1000
-      //     } sec`
-      //   );
-      //   duckCacheId = cacheId;
-      //   duckNumber =
-      //     numberRawData[duck.NFT].n != null ? numberRawData[duck.NFT].n : "-";
-      // } catch (e) {}
+      try {
+        const { data: numberRawData } = await axios.get(
+          `https://wavesducks.com/api/v0/achievements?ids=${duck.NFT}`
+        );
+        const start = new Date().getTime();
+        const {
+          data: { cacheId },
+        } = await axios.get(
+          `https://wavesducks.com/api/v1/preview/preload/duck/${duck.NFT}?actionId=${duck.auctionId}`
+        );
+        console.log(
+          `⏰ preload time for cacheId ${cacheId} and NFT ${duck.NFT} is ${
+            (new Date().getTime() - start) / 1000
+          } sec`
+        );
+        duckCacheId = cacheId;
+        duckNumber =
+          numberRawData[duck.NFT].n != null ? numberRawData[duck.NFT].n : "-";
+      } catch (e) {}
       if (wavesAmount < 1000 / rate) continue;
-      // const link = `https://wavesducks.com/duck/${duck.NFT}?cacheId=${duckCacheId}`;
-      const link = `https://wavesducks.com/duck/${duck.NFT}`;
+      const link = `https://wavesducks.com/duck/${duck.NFT}?cacheId=${duckCacheId}`;
 
       const ruMsg = `Утка [${name}](${link}) (#${duckNumber}) была приобретена за ${wavesAmount} Waves ($${usdAmount} USD)`;
       const enMsg = `Duck [${name}](${link}) (#${duckNumber}) was purchased for ${wavesAmount} Waves ($${usdAmount} USD)`;

@@ -10,6 +10,7 @@ const sendLangSelectMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   await bot.sendMessage(user.id, lng.message.selectLanguage, {
     reply_markup: {
+      resize_keyboard: true,
       keyboard: [
         [{ text: lng.button.enLngButton }],
         [{ text: lng.button.ruLngButton }],

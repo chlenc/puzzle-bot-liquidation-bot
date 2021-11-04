@@ -10,6 +10,7 @@ const sendWhatGetTokensForMessage = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   await bot.sendMessage(user.id, lng.message.whatGetTokensFor, {
     reply_markup: {
+      resize_keyboard: true,
       keyboard: [
         [{ text: lng.button.learnMore }],
         [{ text: lng.button.getRefLink }],

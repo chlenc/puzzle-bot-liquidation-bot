@@ -5,25 +5,20 @@ import { getMyRefsCount, getUserById } from "../controllers/userController";
 
 const { telegram: bot } = telegramService;
 
-const sendAffiliateLinkMsg = async (user) => {
+const sendAccountMsg = async (user) => {
   const lng = langs[user.lang];
   const days = diffDays(new Date(user.createdAt), new Date());
-  const sponsor = await getUserById(user.ref);
-  const friends = await getMyRefsCount(user.id);
   //todo add  link to sponsor
   const changeValues = {
     "{{daysWithUs}}": days,
-    "{{sponsorName}}": sponsor ? `@${sponsor.username}` : "-",
-    "{{invitedFriends}}": friends,
-    "{{userId}}": user.id,
-    "{{botName}}": process.env.BOT_NAME,
+    "{{balance}}": "0.000",
   };
   const re = new RegExp(Object.keys(changeValues).join("|"), "gi");
-  let str = lng.message.affiliateMsg.replace(
+  let str = lng.message.accountInfo.replace(
     re,
     (matched) => changeValues[matched]
   );
 
   await bot.sendMessage(user.id, str);
 };
-export default sendAffiliateLinkMsg;
+export default sendAccountMsg;

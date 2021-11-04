@@ -10,13 +10,14 @@ const sendLearMoreMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   await bot.sendMessage(user.id, lng.message.toolbar, {
     reply_markup: {
+      resize_keyboard: true,
       keyboard: [
-        // [createInlineButton(lng.button.balanceBtn, keys.balance)],
+        [{ text: lng.button.account }],
         [{ text: lng.button.affiliateBtn }],
         [{ text: lng.button.influencers }],
         [{ text: lng.button.myReferals }],
-        [{ text: lng.button.resources }],
         [{ text: lng.button.statistics }],
+        [{ text: lng.button.resources }],
       ],
       inline_keyboard: [
         // [createInlineButton(lng.button.balanceBtn, keys.balance)],

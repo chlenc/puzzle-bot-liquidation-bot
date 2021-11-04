@@ -31,6 +31,8 @@ import sendTopInfluencersMsg from "./messages/sendTopInfluencersMsg";
 import sendFirstRefLinkMsg from "./messages/sendFirstRefLinkMsg";
 import sendAffiliateLinkMsg from "./messages/sendAffiliateLinkMsg";
 import sendJoinToCommunityMsg from "./messages/sendJoinToCommunityMsg";
+import sendNeedJoinToCommunityMsg from "./messages/sendNeedJoinToCommunityMsg";
+import sendAccountMsg from "./messages/sendAccountMsg";
 
 const { telegram: bot } = telegramService;
 const cron = require("node-cron");
@@ -64,13 +66,13 @@ bot.on("message", async (msg) => {
     case langs.RUS.button.alreadyWithYou:
     case langs.SPA.button.alreadyWithYou:
       const res = await telegramService.telegram.getChatMember(
-        langs[user.lang].button.telegramChatID,
-        user.id
+        `@${langs[user.lang].button.telegramLink.split("/").pop()}`,
+        String(user.id)
       );
       if (res.status === "member" || res.status === "administrator") {
         await sendWhatGetTokensForMessage(user);
       } else {
-        await sendJoinToCommunityMsg(user);
+        await sendNeedJoinToCommunityMsg(user);
       }
       break;
 
@@ -86,6 +88,13 @@ bot.on("message", async (msg) => {
     case langs.RUS.button.getRefLink:
     case langs.SPA.button.getRefLink:
       await sendFirstRefLinkMsg(user);
+      break;
+
+    //my account button
+    case langs.ENG.button.account:
+    case langs.RUS.button.account:
+    case langs.SPA.button.account:
+      await sendAccountMsg(user);
       break;
 
     //affiliate button
