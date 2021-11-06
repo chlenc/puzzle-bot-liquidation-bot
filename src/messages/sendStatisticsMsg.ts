@@ -2,8 +2,6 @@ import telegramService from "../services/telegramService";
 import { TUserDocument } from "../models/user";
 import { langs } from "../messages_lib";
 import { getStatisticFromDB, STATISTIC } from "../controllers/statsController";
-import { keys } from "../index";
-import { createInlineButton } from "../utils";
 
 const { telegram: bot } = telegramService;
 

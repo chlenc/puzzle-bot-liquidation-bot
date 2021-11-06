@@ -1,7 +1,5 @@
 import telegramService from "../services/telegramService";
 import { langs } from "../messages_lib";
-import { keys } from "../index";
-import { createInlineButton } from "../utils";
 
 const { telegram: bot } = telegramService;
 
