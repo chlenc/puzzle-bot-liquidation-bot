@@ -183,21 +183,23 @@ bot.onText(/\/start[ \t]*(.*)/, async ({ chat, from }, match) => {
 });
 
 bot.onText(/\/id/, async ({ chat: { id } }) => {
-  await bot.sendMessage(id, String(id)).catch();
+  await bot.sendMessage(id, String(id)).catch(() => null);
 });
 
 bot.onText(/\/rate/, async ({ chat: { id } }) => {
   const rate = await getCurrentWavesRate();
-  await bot.sendMessage(id, rate).catch();
+  await bot.sendMessage(id, rate).catch(() => null);
 });
 
 bot.onText(/\/version/, async ({ chat: { id } }) => {
-  await bot.sendMessage(id, commitCount("chlenc/big-black-duck-bot/")).catch();
+  await bot
+    .sendMessage(id, commitCount("chlenc/big-black-duck-bot/"))
+    .catch(() => null);
 });
 
 bot.onText(/\/stats/, async ({ chat: { id } }) => {
   const stats = await getStatisticFromDB(STATISTIC.GAME);
-  await bot.sendMessage(id, stats, { parse_mode }).catch();
+  await bot.sendMessage(id, stats, { parse_mode }).catch(() => null);
 });
 //
 // bot.onText(/\/address[ \t](.+)/, async ({ chat, from }, match) => {
@@ -237,7 +239,9 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
     const { key, data } = JSON.parse(raw);
     const user = await getUserById(from.id);
     if (user == null) {
-      await bot.sendMessage(from.id, langs.ENG.message.hasNoUserError).catch();
+      await bot
+        .sendMessage(from.id, langs.ENG.message.hasNoUserError)
+        .catch(() => null);
       return;
     }
     // await bot.deleteMessage(from.id, String(message.message_id));

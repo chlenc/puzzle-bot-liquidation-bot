@@ -13,6 +13,6 @@ const sendFirstRefLinkMsg = async (user) => {
         .replace("{{userId}}", user.id)
     )
     .catch();
-  await bot.sendMessage(user.id, lng.message.refMsg2).catch();
+  await bot.sendMessage(user.id, lng.message.refMsg2).catch(() => null);
 };
 export default sendFirstRefLinkMsg;
