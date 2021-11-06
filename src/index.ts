@@ -52,7 +52,8 @@ bot.on("message", async (msg) => {
   if (user == null) {
     await bot
       .sendMessage(msg.from.id, langs.ENG.message.hasNoUserError)
-      .catch();
+      .catch(() => console.log(`❗️cannot send message to ${msg.from.id}`));
+
     return;
   }
   switch (msg.text) {
@@ -332,13 +333,29 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
   } catch (e) {}
 });
 
-cron.schedule("* * * * *", watchOnStats);
+cron.schedule("* * * * *", () =>
+  watchOnStats().catch((e) =>
+    console.log("❌ watchOnStats cron was crushed\n", e)
+  )
+);
 
-cron.schedule("0 * * * *", watchOnInfluencers);
+cron.schedule("0 * * * *", () =>
+  watchOnInfluencers().catch((e) =>
+    console.log("❌ watchOnInfluencers cron was crushed\n", e)
+  )
+);
 
-cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
+cron.schedule("0 12,19 * * *", () =>
+  sendStatisticMessageToChannels().catch((e) =>
+    console.log("❌ sendStatisticMessageToChannels cron was crushed\n", e)
+  )
+);
 
-cron.schedule("* * * * *", watchOnAuction);
+cron.schedule("* * * * *", () =>
+  watchOnAuction().catch((e) =>
+    console.log("❌ watchOnAuction cron was crushed\n", e)
+  )
+);
 
 // cron.schedule("*/5 * * * *", watchOnDucks);
 
