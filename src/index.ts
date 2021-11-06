@@ -247,7 +247,7 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
     if (user == null) {
       await bot
         .sendMessage(from.id, langs.ENG.message.hasNoUserError)
-        .catch(() => console.log(`❗️cannot send message to ${id}`));
+        .catch(() => console.log(`❗️cannot send message to ${from.id}`));
       return;
     }
     // await bot.deleteMessage(from.id, String(message.message_id));
