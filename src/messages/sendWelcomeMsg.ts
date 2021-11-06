@@ -1,9 +1,6 @@
 import telegramService from "../services/telegramService";
-import { getUserLanguageById } from "../controllers/userController";
 import { TUserDocument } from "../models/user";
 import { langs } from "../messages_lib";
-import { createInlineButton } from "../utils";
-import { keys } from "../index";
 
 const { telegram: bot } = telegramService;
 

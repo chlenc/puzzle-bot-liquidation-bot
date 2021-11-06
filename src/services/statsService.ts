@@ -221,20 +221,22 @@ ${data.topDuck}`;
 
   return msg;
 };
-export const checkWalletAddress = async (
-  address?: string
-): Promise<boolean> => {
+
+export const NODE_URL_MAP = {
+  W: "https://nodes.wavesexplorer.com",
+  T: "https://nodes-testnet.wavesnodes.com",
+};
+export const EXPLORER_URL_MAP = {
+  W: "https://wavesexplorer.com/",
+  T: "https://testnet.wavesexplorer.com/",
+};
+
+export const checkWalletAddress = async (address: string): Promise<boolean> => {
   if (address == null) return false;
-  let res = null;
-  try {
-    const { data } = await axios.get(
-      `https://nodes.wavesexplorer.com/addresses/balance/${address}`
-    );
-    res = data;
-  } catch (e) {
-    console.warn(e);
-  }
-  return !!res;
+  return axios
+    .get(`${NODE_URL_MAP[process.env.CHAIN_ID]}/addresses/balance/${address}`)
+    .then(({ data }) => !!data)
+    .catch(() => false);
 };
 
 function getMostFrequentInfluencers(arr: IUserParams[]) {

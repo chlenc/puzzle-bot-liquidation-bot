@@ -24,6 +24,8 @@ export interface IUserParams {
   lastActivityDate?: Date;
   ref?: number;
   myRefs?: number[];
+  state?: string | number;
+  balance: string;
 }
 
 export interface IReferralParams {
@@ -54,6 +56,8 @@ const UserSchema = new mongoose.Schema(
     lang: { type: String, required: true, default: "ENG" },
     ref: { type: Number, required: false },
     myRefs: { type: Number, required: false },
+    state: { type: String, required: false },
+    balance: { type: Number, required: false, default: "0" },
   },
   { timestamps: true }
 );

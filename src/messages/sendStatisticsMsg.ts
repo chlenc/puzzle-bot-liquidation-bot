@@ -12,9 +12,6 @@ const sendStatisticsMsg = async (user: TUserDocument) => {
   const stats = await getStatisticFromDB(STATISTIC.GAME);
   await bot.sendMessage(user.id, lng.button.statistics + stats, {
     parse_mode: "Markdown",
-    // reply_markup: {
-    //   inline_keyboard: [[createInlineButton(lng.button.back, keys.learnMore)]],
-    // },
   });
 };
 export default sendStatisticsMsg;
