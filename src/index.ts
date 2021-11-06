@@ -77,7 +77,7 @@ bot.on("message", async (msg) => {
     case langs.RUS.button.alreadyWithYou:
     case langs.SPA.button.alreadyWithYou:
       const res = await telegramService.telegram.getChatMember(
-        `@${langs[user.lang].button.telegramLink.split("/").pop()}`,
+        `@${langs[user.lang].link.telegramLink.split("/").pop()}`,
         String(user.id)
       );
       if (res.status === "member" || res.status === "administrator") {

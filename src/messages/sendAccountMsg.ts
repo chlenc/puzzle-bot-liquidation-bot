@@ -1,8 +1,6 @@
 import telegramService from "../services/telegramService";
 import { langs } from "../messages_lib";
 import { createInlineButton, diffDays } from "../utils";
-import { getMyRefsCount, getUserById } from "../controllers/userController";
-import { TUserDocument } from "../models/user";
 import { keys } from "../index";
 import { checkWalletAddress } from "../services/statsService";
 
@@ -31,11 +29,16 @@ const sendAccountMsg = async (user) => {
     ? [
         [createInlineButton(lng.button.withdraw, keys.withdraw)],
         [createInlineButton(lng.button.changeAddress, keys.changeAddress)],
-        [{ text: lng.button.howToCreateWallet, url: lng.button.telegramLink }],
+        [{ text: lng.button.howToCreateWallet, url: lng.link.telegramLink }],
       ]
     : [
         [createInlineButton(lng.button.enterWalletAddress, keys.enterAddress)],
-        [{ text: lng.button.howToCreateWallet, url: lng.button.telegramLink }],
+        [
+          {
+            text: lng.button.howToCreateWallet,
+            url: lng.link.howTocreateWalletLink,
+          },
+        ],
       ];
   await bot.sendMessage(user.id, msg, { reply_markup: { inline_keyboard } });
 };
