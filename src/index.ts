@@ -333,29 +333,13 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
   } catch (e) {}
 });
 
-cron.schedule("* * * * *", () =>
-  watchOnStats().catch((e) =>
-    console.log("❌ watchOnStats cron was crushed\n", e)
-  )
-);
+cron.schedule("* * * * *", watchOnStats);
 
-cron.schedule("0 * * * *", () =>
-  watchOnInfluencers().catch((e) =>
-    console.log("❌ watchOnInfluencers cron was crushed\n", e)
-  )
-);
+cron.schedule("0 * * * *", watchOnInfluencers);
 
-cron.schedule("0 12,19 * * *", () =>
-  sendStatisticMessageToChannels().catch((e) =>
-    console.log("❌ sendStatisticMessageToChannels cron was crushed\n", e)
-  )
-);
+cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
 
-cron.schedule("* * * * *", () =>
-  watchOnAuction().catch((e) =>
-    console.log("❌ watchOnAuction cron was crushed\n", e)
-  )
-);
+cron.schedule("* * * * *", watchOnAuction);
 
 // cron.schedule("*/5 * * * *", watchOnDucks);
 
