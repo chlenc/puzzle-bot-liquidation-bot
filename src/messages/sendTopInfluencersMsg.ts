@@ -8,6 +8,8 @@ const { telegram: bot } = telegramService;
 const sendTopInfluencersMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   const top10 = await getStatisticFromDB(STATISTIC.INFLUENCERS);
-  await bot.sendMessage(user.id, `${lng.button.influencers}\n ${top10}`);
+  await bot
+    .sendMessage(user.id, `${lng.button.influencers}\n ${top10}`)
+    .catch();
 };
 export default sendTopInfluencersMsg;

@@ -23,6 +23,6 @@ const sendAffiliateLinkMsg = async (user) => {
     (matched) => changeValues[matched]
   );
 
-  await bot.sendMessage(user.id, str, { parse_mode: "HTML" });
+  await bot.sendMessage(user.id, str, { parse_mode: "HTML" }).catch();
 };
 export default sendAffiliateLinkMsg;

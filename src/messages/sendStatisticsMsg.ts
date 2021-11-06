@@ -8,8 +8,10 @@ const { telegram: bot } = telegramService;
 const sendStatisticsMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   const stats = await getStatisticFromDB(STATISTIC.GAME);
-  await bot.sendMessage(user.id, lng.button.statistics + stats, {
-    parse_mode: "Markdown",
-  });
+  await bot
+    .sendMessage(user.id, lng.button.statistics + stats, {
+      parse_mode: "Markdown",
+    })
+    .catch();
 };
 export default sendStatisticsMsg;

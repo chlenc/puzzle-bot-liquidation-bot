@@ -6,6 +6,6 @@ const { telegram: bot } = telegramService;
 
 const sendTranslatedMessage = async (user: TUserDocument, key: string) => {
   const lng = langs[user.lang];
-  await bot.sendMessage(user.id, lng.message[key]);
+  await bot.sendMessage(user.id, lng.message[key]).catch();
 };
 export default sendTranslatedMessage;

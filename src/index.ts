@@ -50,10 +50,11 @@ bot.on("message", async (msg) => {
   const user = await getUserById(msg.from.id);
   if (/\/start[ \t]*(.*)/.test(msg.text)) return;
   if (user == null) {
-    await bot.sendMessage(msg.from.id, "👇🏻 Please, press here 👇🏻\n/start");
+    await bot
+      .sendMessage(msg.from.id, langs.ENG.message.hasNoUserError)
+      .catch();
     return;
   }
-
   switch (msg.text) {
     //LANGUAGES
     case langs.ENG.button.enLngButton:
@@ -182,21 +183,21 @@ bot.onText(/\/start[ \t]*(.*)/, async ({ chat, from }, match) => {
 });
 
 bot.onText(/\/id/, async ({ chat: { id } }) => {
-  await bot.sendMessage(id, String(id));
+  await bot.sendMessage(id, String(id)).catch();
 });
 
 bot.onText(/\/rate/, async ({ chat: { id } }) => {
   const rate = await getCurrentWavesRate();
-  await bot.sendMessage(id, rate);
+  await bot.sendMessage(id, rate).catch();
 });
 
 bot.onText(/\/version/, async ({ chat: { id } }) => {
-  await bot.sendMessage(id, commitCount("chlenc/big-black-duck-bot/"));
+  await bot.sendMessage(id, commitCount("chlenc/big-black-duck-bot/")).catch();
 });
 
 bot.onText(/\/stats/, async ({ chat: { id } }) => {
   const stats = await getStatisticFromDB(STATISTIC.GAME);
-  await bot.sendMessage(id, stats, { parse_mode });
+  await bot.sendMessage(id, stats, { parse_mode }).catch();
 });
 //
 // bot.onText(/\/address[ \t](.+)/, async ({ chat, from }, match) => {
@@ -236,7 +237,7 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
     const { key, data } = JSON.parse(raw);
     const user = await getUserById(from.id);
     if (user == null) {
-      await bot.sendMessage(from.id, "👇🏻 Please, press here 👇🏻\n/start");
+      await bot.sendMessage(from.id, langs.ENG.message.hasNoUserError).catch();
       return;
     }
     // await bot.deleteMessage(from.id, String(message.message_id));
@@ -244,10 +245,7 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
       case keys.enterAddress:
       case keys.changeAddress:
         await user.updateOne({ state: keys.enterAddress }).exec();
-        await bot.sendMessage(
-          user.id,
-          langs[user.lang].message.enterWalletAddress
-        );
+        await sendTranslatedMessage(user, "enterWalletAddress");
         break;
       case keys.withdraw:
         if (Number(user.balance) === 0) return;
@@ -315,7 +313,10 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
           text: `❌ Rejected by ${user.first_name}`,
           url: `tg://user?id=${user.id}`,
         });
-        await bot.sendMessage(requestedUser.id, "Withdraw was rejected");
+        await sendTranslatedMessage(
+          requestedUser,
+          langs.RUS.message.withdrawRejected
+        );
         break;
     }
   } catch (e) {}

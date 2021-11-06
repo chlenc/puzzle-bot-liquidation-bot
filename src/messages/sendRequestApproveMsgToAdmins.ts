@@ -13,9 +13,11 @@ const sendRequestApproveMsgToAdmins = async (user: TUserDocument) => {
     [createInlineButton("✅ Approve", keys.withdrawApprove, { id: user.id })],
     [createInlineButton("❌ Reject", keys.withdrawReject, { id: user.id })],
   ];
-  await bot.sendMessage(process.env.CONFIRM_GROUP_ID, msg, {
-    parse_mode: "HTML",
-    reply_markup: { inline_keyboard },
-  });
+  await bot
+    .sendMessage(process.env.CONFIRM_GROUP_ID, msg, {
+      parse_mode: "HTML",
+      reply_markup: { inline_keyboard },
+    })
+    .catch();
 };
 export default sendRequestApproveMsgToAdmins;

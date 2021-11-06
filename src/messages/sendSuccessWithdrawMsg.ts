@@ -10,12 +10,19 @@ const sendSuccessWithdrawMsg = async (
   transactionId: string
 ) => {
   const lng = langs[user.lang];
-  await bot.sendMessage(user.id, lng.message.successWithdraw, {
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: lng.button.checkTransaction, url: getTxLink(transactionId) }],
-      ],
-    },
-  });
+  await bot
+    .sendMessage(user.id, lng.message.successWithdraw, {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: lng.button.checkTransaction,
+              url: getTxLink(transactionId),
+            },
+          ],
+        ],
+      },
+    })
+    .catch();
 };
 export default sendSuccessWithdrawMsg;

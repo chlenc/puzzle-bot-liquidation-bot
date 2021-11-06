@@ -40,6 +40,8 @@ const sendAccountMsg = async (user) => {
           },
         ],
       ];
-  await bot.sendMessage(user.id, msg, { reply_markup: { inline_keyboard } });
+  await bot
+    .sendMessage(user.id, msg, { reply_markup: { inline_keyboard } })
+    .catch();
 };
 export default sendAccountMsg;
