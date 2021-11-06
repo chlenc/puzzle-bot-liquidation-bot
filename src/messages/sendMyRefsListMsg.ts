@@ -1,8 +1,6 @@
 import telegramService from "../services/telegramService";
 import { TUserDocument } from "../models/user";
 import { langs } from "../messages_lib";
-import { keys } from "../index";
-import { createInlineButton } from "../utils";
 import { getMyRefsList } from "../controllers/userController";
 
 const { telegram: bot } = telegramService;
@@ -13,17 +11,10 @@ const sendMyRefsListMsg = async (user: TUserDocument) => {
   if (list === "") {
     list = lng.message.noRefs;
   } else {
-    list = lng.button.MyReferals + list;
+    list = lng.button.myReferals + list;
   }
   await bot
-    .sendMessage(user.id, list, {
-      parse_mode: "HTML",
-      reply_markup: {
-        inline_keyboard: [
-          [createInlineButton(lng.button.back, keys.learnMore)],
-        ],
-      },
-    })
+    .sendMessage(user.id, list, { parse_mode: "HTML" })
     .catch((e) => console.log(e.message));
 };
 export default sendMyRefsListMsg;

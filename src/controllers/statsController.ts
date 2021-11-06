@@ -13,7 +13,7 @@ export const updateStats = async (value: string, key: string) => {
   } else {
     await Statistic.findByIdAndUpdate(stats.id, {
       value,
-    });
+    }).exec();
   }
 };
 
