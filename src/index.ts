@@ -183,23 +183,29 @@ bot.onText(/\/start[ \t]*(.*)/, async ({ chat, from }, match) => {
 });
 
 bot.onText(/\/id/, async ({ chat: { id } }) => {
-  await bot.sendMessage(id, String(id)).catch(() => null);
+  await bot
+    .sendMessage(id, String(id))
+    .catch(() => console.log(`❗️cannot send message to ${id}`));
 });
 
 bot.onText(/\/rate/, async ({ chat: { id } }) => {
   const rate = await getCurrentWavesRate();
-  await bot.sendMessage(id, rate).catch(() => null);
+  await bot
+    .sendMessage(id, rate)
+    .catch(() => console.log(`❗️cannot send message to ${id}`));
 });
 
 bot.onText(/\/version/, async ({ chat: { id } }) => {
   await bot
     .sendMessage(id, commitCount("chlenc/big-black-duck-bot/"))
-    .catch(() => null);
+    .catch(() => console.log(`❗️cannot send message to ${id}`));
 });
 
 bot.onText(/\/stats/, async ({ chat: { id } }) => {
   const stats = await getStatisticFromDB(STATISTIC.GAME);
-  await bot.sendMessage(id, stats, { parse_mode }).catch(() => null);
+  await bot
+    .sendMessage(id, stats, { parse_mode })
+    .catch(() => console.log(`❗️cannot send message to ${id}`));
 });
 //
 // bot.onText(/\/address[ \t](.+)/, async ({ chat, from }, match) => {
@@ -241,7 +247,7 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
     if (user == null) {
       await bot
         .sendMessage(from.id, langs.ENG.message.hasNoUserError)
-        .catch(() => null);
+        .catch(() => console.log(`❗️cannot send message to ${id}`));
       return;
     }
     // await bot.deleteMessage(from.id, String(message.message_id));

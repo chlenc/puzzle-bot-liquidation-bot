@@ -12,6 +12,6 @@ const editApproveRequestMessage = async (
       { inline_keyboard: button != null ? [[button]] : undefined },
       { message_id, chat_id: process.env.CONFIRM_GROUP_ID }
     )
-    .catch(() => null);
+    .catch(() => console.log(`❗️cannot edit message ${message_id}`));
 
 export default editApproveRequestMessage;

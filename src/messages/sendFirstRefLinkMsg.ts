@@ -13,6 +13,8 @@ const sendFirstRefLinkMsg = async (user) => {
         .replace("{{userId}}", user.id)
     )
     .catch();
-  await bot.sendMessage(user.id, lng.message.refMsg2).catch(() => null);
+  await bot
+    .sendMessage(user.id, lng.message.refMsg2)
+    .catch(() => console.log(`❗️cannot send message to ${user.id}`));
 };
 export default sendFirstRefLinkMsg;
