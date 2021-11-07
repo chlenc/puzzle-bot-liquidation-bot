@@ -1,19 +1,19 @@
-const msg = {
-  welcome_test:
-    "*Welcome to the Waves Ducks family!* \n\n" +
-    "[Waves Ducks](https://wavesducks.com/) is a game centered on collectable digital duck images, developed for active members of the Waves ecosystem. In this game, users acquire and collect digital images of ducks, which we call Waves Ducks\n\n" +
-    "To get daily game stats please click here 👉🏻 /stats !" +
-    "\n\nTo subscribe for getting changes of your ducks bids, rarity and sales, please send \n\n*/address <WALLET_ADDRESS>*\n\n" +
-    "If you want to turn off subscription text me /cancel ",
-  welcome:
-    "*Welcome to the Waves Ducks family!* \n\n" +
-    "[Waves Ducks](https://wavesducks.com/) is a game centered on collectable digital duck images, developed for active members of the Waves ecosystem. In this game, users acquire and collect digital images of ducks, which we call Waves Ducks\n\n" +
-    "To get daily game stats please click here 👉🏻 /stats !",
-  correct_wallet_address:
-    "Good! Since now you you will be getting changes!🤌🏻\n\nTo cancel subscription send me /cancel",
-  wrong_wallet_address: "Ooops... seems like this address is not correct!😮",
-  cancel_subsc: "Subscription has been canceled😮",
-};
+// const msg = {
+//   welcome_test:
+//     "*Welcome to the Waves Ducks family!* \n\n" +
+//     "[Waves Ducks](https://wavesducks.com/) is a game centered on collectable digital duck images, developed for active members of the Waves ecosystem. In this game, users acquire and collect digital images of ducks, which we call Waves Ducks\n\n" +
+//     "To get daily game stats please click here 👉🏻 /stats !" +
+//     "\n\nTo subscribe for getting changes of your ducks bids, rarity and sales, please send \n\n*/address <WALLET_ADDRESS>*\n\n" +
+//     "If you want to turn off subscription text me /cancel ",
+//   welcome:
+//     "*Welcome to the Waves Ducks family!* \n\n" +
+//     "[Waves Ducks](https://wavesducks.com/) is a game centered on collectable digital duck images, developed for active members of the Waves ecosystem. In this game, users acquire and collect digital images of ducks, which we call Waves Ducks\n\n" +
+//     "To get daily game stats please click here 👉🏻 /stats !",
+//   correct_wallet_address:
+//     "Good! Since now you you will be getting changes!🤌🏻\n\nTo cancel subscription send me /cancel",
+//   wrong_wallet_address: "Ooops... seems like this address is not correct!😮",
+//   cancel_subsc: "Subscription has been canceled😮",
+// };
 
 export const langs = {
   ENG: {
@@ -45,17 +45,17 @@ export const langs = {
       accountInfo:
         "👤 Account Information\n\n💳 Balance {{balance}} EGGs\n\n🗓 You are with us for {{daysWithUs}} days",
       faqMsg:
-        "You can read the answers to popular questions on our official website ⁉️👇\nhttps://www.notion.so/wavesducks/Waves-Ducks-Guide-26163c114ea2447aa5796f6fa603d647\n",
+        "⁉️ You can read the answers to popular questions here  👇\nhttps://www.notion.so/wavesducks/Waves-Ducks-Guide-26163c114ea2447aa5796f6fa603d647\n",
       chatMsg: "Please join main chat here 👇 https://t.me/duckshunters  ",
-      enterWalletAddress: "Enter you wallet address",
-      wrongWalletAddress: "Incorrect address",
-      withdrawProcess: "Withdraw in progress...",
+      enterWalletAddress: " 🔷Add your Waves wallet address  (3P..)",
+      wrongWalletAddress: "⛔️ Incorrect address",
+      withdrawProcess: "⏳Withdraw in progress...",
       waitingForAdminConfirm:
-        "Waiting for admin approval, it could take several minutes...",
+        "🥱 Waiting for admin approval, it could take several minutes...",
       successWithdraw: "EGG tokens withdrawn successfully",
       hasNoUserError: "👇🏻 Please, press here 👇🏻\\n/start",
       somethingWrong: "something wrong",
-      withdrawRejected: "Withdraw was rejected",
+      withdrawRejected: "⛔️ Withdraw was rejected",
     },
     button: {
       ruLngButton: "🇷🇺Русский",
@@ -78,7 +78,7 @@ export const langs = {
       account: "👤 Account Information",
       faq: "❓ FAQ",
       chat: "💬 Main chat",
-      enterWalletAddress: "🔷Add your Waves wallet address  (3P..)",
+      enterWalletAddress: " 💸 Withdraw tokens",
       howTocreateWallet: "👉How to create Waves wallet",
       withdrawEgg: "💸 Withdraw EGGs",
       changeWalletAddress: "Change wallet address",
@@ -119,17 +119,17 @@ export const langs = {
       accountInfo:
         "👤 Информация об аккаунте\n\n💳 Баланс {{balance}} EGGs\n\n🗓 Ты с нами {{daysWithUs}} дня",
       faqMsg:
-        "Ты можешь найти ответы на популярные вопросы на нашем официальном сайте ⁉️👇\nhttps://www.notion.so/wavesducks/Waves-Ducks-796aa08c2141404c9c2553d876216b1f",
+        "⁉️ Ты можешь найти ответы на популярные вопросы здесь👇\nhttps://www.notion.so/wavesducks/Waves-Ducks-796aa08c2141404c9c2553d876216b1f",
       chatMsg: " Заходите в основной чат игры 👇\nhttps://t.me/duckhunters_ru",
-      enterWalletAddress: "Введи адрес Waves кошелька",
-      wrongWalletAddress: "Не верный адрес",
-      withdrawProcess: "Подождите, токены выводятся...",
+      enterWalletAddress: "  🔷Введи адрес Waves кошелька (3P..)",
+      wrongWalletAddress: "⛔️ Не верный адрес",
+      withdrawProcess: "⏳Подождите, токены выводятся...",
       waitingForAdminConfirm:
-        "Ждем апрува администратора, это может занять несколько минут...",
+        "🥱 Ждем апрува администратора, это может занять несколько минут...",
       successWithdraw: "Токены выведены успешно",
       hasNoUserError: "👇🏻 Please, press here 👇🏻\\n/start",
       somethingWrong: "something wrong",
-      withdrawRejected: "Вывод средств отклонен",
+      withdrawRejected: "⛔️ Вывод средств отклонен",
     },
     button: {
       ruLngButton: "🇷🇺Русский",
@@ -152,7 +152,7 @@ export const langs = {
       account: "👤 Мой аккаунт",
       faq: "❓ Вопросы и ответы",
       chat: "💬 Основной чат",
-      enterWalletAddress: "  🔷Добавить свой адрес Waves кошелька (3P..)",
+      enterWalletAddress: " 💸 Вывести токены",
       howTocreateWallet: "👉 Как создать Waves кошелек",
       withdrawEgg: "💸 Вывести токены EGGs",
       changeWalletAddress: "Изменить адрес кошелька ",
@@ -193,17 +193,17 @@ export const langs = {
       accountInfo:
         "👤 Información de la cuenta\n\n💳 Balance {{balance}} EGGs\n\n🗓 Estás con nosotros {{daysWithUs}} días",
       faqMsg:
-        "Puede leer las respuestas a preguntas populares en nuestro sitio web oficial ⁉️👇\nhttps://www.notion.so/wavesducks/Waves-Ducks-Guide-26163c114ea2447aa5796f6fa603d647",
+        "⁉️ Puede leer las respuestas a preguntas populares en nuestro sitio web oficial👇\nhttps://www.notion.so/wavesducks/Waves-Ducks-Guide-26163c114ea2447aa5796f6fa603d647",
       chatMsg:
         "Ve al chat principal del juego 👇 \nhttps://t.me/duckshunterses",
-      enterWalletAddress: "Ingrese la dirección de su billetera Waves",
-      wrongWalletAddress: "Dirección incorrecta\n",
-      withdrawProcess: "Procesando el pedido...",
-      waitingForAdminConfirm: "Esperando la aprovación de un administrador",
+      enterWalletAddress: "🔷 Agregar dirección de billetera Waves (3P..)\n",
+      wrongWalletAddress: "⛔️ Dirección incorrecta\n",
+      withdrawProcess: "⏳ Procesando el pedido...",
+      waitingForAdminConfirm: "🥱 Esperando la aprovación de un administrador",
       successWithdraw: "Retiro de EGG exitosa",
       hasNoUserError: "👇🏻 Porfavor, pulsa aquí 👇🏻\\n/start",
       somethingWrong: "Algo fué mal",
-      withdrawRejected: "El retiro ha sido rechazado",
+      withdrawRejected: "⛔️ El retiro ha sido rechazado",
     },
     button: {
       ruLngButton: "🇷🇺Русский",
@@ -226,7 +226,7 @@ export const langs = {
       account: "👤 Información de la cuenta",
       faq: "❓ FAQ",
       chat: "💬 Chat principal ",
-      enterWalletAddress: "🔷 Agregar dirección de billetera Waves (3P..)",
+      enterWalletAddress: " 💸 Retirar tokens\n",
       howTocreateWallet: "👉Cómo crear una billetera Waves",
       withdrawEgg: "💸 Retirar EGGs",
       changeWalletAddress: "Cambiar la dirección",
@@ -239,5 +239,3 @@ export const langs = {
     },
   },
 };
-
-export default msg;
