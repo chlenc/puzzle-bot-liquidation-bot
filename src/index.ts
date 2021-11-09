@@ -333,11 +333,11 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
   } catch (e) {}
 });
 
-cron.schedule("* * * * *", watchOnStats);
+// cron.schedule("* * * * *", watchOnStats);
 
 // cron.schedule("0 * * * *", watchOnInfluencers);
 
-cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
+// cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
 
 // cron.schedule("* * * * *", watchOnAuction);
 
