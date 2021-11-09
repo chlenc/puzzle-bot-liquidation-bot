@@ -339,8 +339,26 @@ cron.schedule("* * * * *", watchOnStats);
 
 cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
 
-cron.schedule("* * * * *", watchOnAuction);
+// cron.schedule("* * * * *", watchOnAuction);
 
 // cron.schedule("*/5 * * * *", watchOnDucks);
+
+(async () => {
+  setInterval(async () => {
+    await watchOnAuction();
+  }, 5 * 60 * 1000);
+})();
+
+(async () => {
+  setInterval(async () => {
+    await watchOnInfluencers();
+  }, 15 * 60 * 1000);
+})();
+
+(async () => {
+  setInterval(async () => {
+    await watchOnStats();
+  }, 5 * 60 * 1000);
+})();
 
 process.stdout.write("Bot has been started ✅ ");
