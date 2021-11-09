@@ -147,7 +147,10 @@ export const watchOnAuction = async () => {
 };
 
 export const watchOnStats = async () => {
-  await updateStats(await getStatsInfoFromBlockchain(), STATISTIC.GAME);
+  await updateStats(
+    { value: await getStatsInfoFromBlockchain() },
+    STATISTIC.GAME
+  );
 };
 export const watchOnInfluencers = async () => {
   await updateStats(await getTopInfluencers(), STATISTIC.INFLUENCERS);

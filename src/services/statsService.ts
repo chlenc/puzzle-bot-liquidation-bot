@@ -1,8 +1,8 @@
 import axios from "axios";
-import { getDuckName, prettifyNums } from "../utils";
+import { buildHtmlUserLink, prettifyNums } from "../utils";
 import * as moment from "moment";
 import { decimals, TAuctionRespData, THatchingRespData } from "../interfaces";
-import { ITelegramUser, IUserParams, User } from "../models/user";
+import { IUserParams, User } from "../models/user";
 import { getUserById } from "../controllers/userController";
 
 export const getCurrentWavesRate = async () => {
@@ -267,10 +267,12 @@ export const getTopInfluencers = async () => {
   });
   const influencers: Array<string> = getMostFrequentInfluencers(userAddedToday);
   let res = "";
+  const idsArray = [];
   for (let index in influencers) {
     const user = await getUserById(+influencers[index]);
     const num = +index + 1;
-    res += `\n${num} - @${user.username}`;
+    idsArray.push(user.id);
+    res += `\n${num} - ${buildHtmlUserLink(user)}`;
   }
-  return res;
+  return { value: res, data: JSON.stringify(idsArray) };
 };

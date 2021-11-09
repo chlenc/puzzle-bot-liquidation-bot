@@ -1,20 +1,3 @@
-// const msg = {
-//   welcome_test:
-//     "*Welcome to the Waves Ducks family!* \n\n" +
-//     "[Waves Ducks](https://wavesducks.com/) is a game centered on collectable digital duck images, developed for active members of the Waves ecosystem. In this game, users acquire and collect digital images of ducks, which we call Waves Ducks\n\n" +
-//     "To get daily game stats please click here 👉🏻 /stats !" +
-//     "\n\nTo subscribe for getting changes of your ducks bids, rarity and sales, please send \n\n*/address <WALLET_ADDRESS>*\n\n" +
-//     "If you want to turn off subscription text me /cancel ",
-//   welcome:
-//     "*Welcome to the Waves Ducks family!* \n\n" +
-//     "[Waves Ducks](https://wavesducks.com/) is a game centered on collectable digital duck images, developed for active members of the Waves ecosystem. In this game, users acquire and collect digital images of ducks, which we call Waves Ducks\n\n" +
-//     "To get daily game stats please click here 👉🏻 /stats !",
-//   correct_wallet_address:
-//     "Good! Since now you you will be getting changes!🤌🏻\n\nTo cancel subscription send me /cancel",
-//   wrong_wallet_address: "Ooops... seems like this address is not correct!😮",
-//   cancel_subsc: "Subscription has been canceled😮",
-// };
-
 export const langs = {
   ENG: {
     message: {
@@ -47,12 +30,13 @@ export const langs = {
       faqMsg:
         "⁉️ You can read the answers to popular questions here  👇\nhttps://www.notion.so/wavesducks/Waves-Ducks-Guide-26163c114ea2447aa5796f6fa603d647\n",
       chatMsg: "Please join main chat here 👇 https://t.me/duckshunters  ",
-      enterWalletAddress: " 🔷Add your Waves wallet address  (3P..)",
+      enterWalletAddress:
+        " 🔷 Please add your Waves wallet address to withdraw EGGs tokens  (3P..)",
       wrongWalletAddress: "⛔️ Incorrect address",
-      withdrawProcess: "⏳Withdraw in progress...",
+      withdrawProcess: "⏳ Withdraw in progress...",
       waitingForAdminConfirm:
         "🥱 Waiting for admin approval, it could take several minutes...",
-      successWithdraw: "EGG tokens withdrawn successfully",
+      successWithdraw: "Congrats, EGG tokens withdrawn successfully  ✅",
       hasNoUserError: "👇🏻 Please, press here 👇🏻\\n/start",
       somethingWrong: "something wrong",
       withdrawRejected: "⛔️ Withdraw was rejected",
@@ -81,7 +65,7 @@ export const langs = {
       enterWalletAddress: " 💸 Withdraw tokens",
       howTocreateWallet: "👉How to create Waves wallet",
       withdrawEgg: "💸 Withdraw EGGs",
-      changeWalletAddress: "Change wallet address",
+      changeWalletAddress: "Change Waves wallet address",
       checkTransaction: "📃 Check transaction",
     },
     link: {
@@ -121,12 +105,13 @@ export const langs = {
       faqMsg:
         "⁉️ Ты можешь найти ответы на популярные вопросы здесь👇\nhttps://www.notion.so/wavesducks/Waves-Ducks-796aa08c2141404c9c2553d876216b1f",
       chatMsg: " Заходите в основной чат игры 👇\nhttps://t.me/duckhunters_ru",
-      enterWalletAddress: "  🔷Введи адрес Waves кошелька (3P..)",
+      enterWalletAddress:
+        "  🔷Введи адрес Waves кошелька, чтобы получить EGGs токены (3P..)",
       wrongWalletAddress: "⛔️ Не верный адрес",
       withdrawProcess: "⏳Подождите, токены выводятся...",
       waitingForAdminConfirm:
         "🥱 Ждем апрува администратора, это может занять несколько минут...",
-      successWithdraw: "Токены выведены успешно",
+      successWithdraw: "Ура, токены выведены успешно ✅",
       hasNoUserError: "👇🏻 Please, press here 👇🏻\\n/start",
       somethingWrong: "something wrong",
       withdrawRejected: "⛔️ Вывод средств отклонен",
@@ -155,7 +140,7 @@ export const langs = {
       enterWalletAddress: " 💸 Вывести токены",
       howTocreateWallet: "👉 Как создать Waves кошелек",
       withdrawEgg: "💸 Вывести токены EGGs",
-      changeWalletAddress: "Изменить адрес кошелька ",
+      changeWalletAddress: "Изменить адрес Waves кошелька ",
       checkTransaction: "📃 Посмотреть транзакцию",
     },
     link: {
@@ -200,7 +185,7 @@ export const langs = {
       wrongWalletAddress: "⛔️ Dirección incorrecta\n",
       withdrawProcess: "⏳ Procesando el pedido...",
       waitingForAdminConfirm: "🥱 Esperando la aprovación de un administrador",
-      successWithdraw: "Retiro de EGG exitosa",
+      successWithdraw: "Retiro de EGG exitosa ✅",
       hasNoUserError: "👇🏻 Porfavor, pulsa aquí 👇🏻\\n/start",
       somethingWrong: "Algo fué mal",
       withdrawRejected: "⛔️ El retiro ha sido rechazado",

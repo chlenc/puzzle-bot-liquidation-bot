@@ -13,12 +13,15 @@ import {
 import { langs } from "./messages_lib";
 import { initMongo } from "./services/mongo";
 import {
-  sendStatisticMessageToChannels,
   watchOnAuction,
   watchOnInfluencers,
   watchOnStats,
 } from "./services/crons";
-import { getStatisticFromDB, STATISTIC } from "./controllers/statsController";
+import {
+  getStatisticFromDB,
+  rewardInfluencers,
+  STATISTIC,
+} from "./controllers/statsController";
 import sendLangSelectMsg from "./messages/sendLangSelectMsg";
 import sendWelcomeMsg from "./messages/sendWelcomeMsg";
 import sendWhatGetTokensForMessage from "./messages/sendWhatGetTokensForMessage";
@@ -360,5 +363,7 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
     await watchOnStats();
   }, 5 * 60 * 1000);
 })();
+
+cron.schedule("50 23 * * *", rewardInfluencers);
 
 process.stdout.write("Bot has been started ✅ ");
