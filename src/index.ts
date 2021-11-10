@@ -41,6 +41,7 @@ import sendSuccessWithdrawMsg from "./messages/sendSuccessWithdrawMsg";
 import sendRequestApproveMsgToAdmins from "./messages/sendRequestApproveMsgToAdmins";
 import editApproveRequestMessage from "./messages/editApproveRequestMessage";
 import sendTranslatedMessage from "./messages/sendTranslatedMessage";
+import sendCaptcha from "./messages/sendCaptcha";
 
 const { telegram: bot } = telegramService;
 const cron = require("node-cron");
@@ -181,9 +182,12 @@ bot.on("message", async (msg) => {
 //COMMANDS
 bot.onText(/\/start[ \t]*(.*)/, async ({ chat, from }, match) => {
   let user = await getUserById(from.id);
-  if (user == null) user = await createUser(from, match);
-  await updateUserActivityInfo(user);
-  await sendLangSelectMsg(user);
+  if (user == null) {
+    await sendCaptcha(from.id, match ? String(match[1]) : null);
+  } else {
+    await updateUserActivityInfo(user);
+    await sendLangSelectMsg(user);
+  }
 });
 
 bot.onText(/\/id/, async ({ chat: { id } }) => {
@@ -242,11 +246,30 @@ export enum keys {
   changeAddress = "changeAddress",
   withdrawApprove = "withdrawApprove",
   withdrawReject = "withdrawReject",
+  captcha = "captcha",
 }
 
 bot.on("callback_query", async ({ from, message, data: raw }) => {
   try {
     const { key, data } = JSON.parse(raw);
+    //CAPTCHA VERIFY
+    if (key === keys.captcha) {
+      if (data.valid) {
+        let user = await getUserById(from.id);
+        if (user == null) user = await createUser(from, data.match);
+        await updateUserActivityInfo(user);
+        await sendLangSelectMsg(user);
+      } else {
+        await bot
+          .sendMessage(from.id, langs.ENG.message.incorrectCaptcha)
+          .catch(() => console.log(`❗️cannot send message to ${from.id}`));
+        await sendCaptcha(from.id, data.match);
+      }
+      await bot.deleteMessage(from.id, String(message.message_id));
+      return;
+    }
+
+    //Trying to find user
     const user = await getUserById(from.id);
     if (user == null) {
       await bot
@@ -254,7 +277,6 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
         .catch(() => console.log(`❗️cannot send message to ${from.id}`));
       return;
     }
-    // await bot.deleteMessage(from.id, String(message.message_id));
     switch (key) {
       case keys.enterAddress:
       case keys.changeAddress:

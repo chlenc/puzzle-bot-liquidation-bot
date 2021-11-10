@@ -27,7 +27,9 @@
             "successWithdraw": "Retiro de EGG exitosa ✅",
             "hasNoUserError": "👇🏻 Porfavor, pulsa aquí 👇🏻\\n/start",
             "somethingWrong": "Algo fué mal",
-            "withdrawRejected": "⛔️ El retiro ha sido rechazado"
+            "withdrawRejected": "⛔️ El retiro ha sido rechazado",
+            "captcha": "Please, choose the right answer: \n\n{{captcha}}",
+            "incorrectCaptcha": "Incorrect answer, please try again"
         },
         "button": {
             "ruLngButton": "🇷🇺Русский",
@@ -89,7 +91,9 @@
             "successWithdraw": "Ура, токены выведены успешно ✅",
             "hasNoUserError": "👇🏻 Please, press here 👇🏻\\n/start",
             "somethingWrong": "something wrong",
-            "withdrawRejected": "⛔️ Вывод средств отклонен"
+            "withdrawRejected": "⛔️ Вывод средств отклонен",
+            "captcha": "Please, choose the right answer: \n\n{{captcha}}",
+            "incorrectCaptcha": "Incorrect answer, please try again"
         },
         "button": {
             "ruLngButton": "🇷🇺Русский",
@@ -151,7 +155,9 @@
             "successWithdraw": "Congrats, EGG tokens withdrawn successfully  ✅",
             "hasNoUserError": "👇🏻 Please, press here 👇🏻\\n/start",
             "somethingWrong": "something wrong",
-            "withdrawRejected": "⛔️ Withdraw was rejected"
+            "withdrawRejected": "⛔️ Withdraw was rejected",
+            "captcha": "Please, choose the right answer: \n\n{{captcha}}",
+            "incorrectCaptcha": "Incorrect answer, please try again"
         },
         "button": {
             "ruLngButton": "🇷🇺Русский",

@@ -9,24 +9,20 @@ export const getUserById = async (id: number) => {
   return users[0];
 };
 
-export const createUser = async (
-  from: ITelegramUser,
-  match?: RegExpExecArray
-) => {
+export const createUser = async (from: ITelegramUser, match: string | null) => {
   const user = await User.create({ ...from });
-  if (match[1] && +match[1] !== user.id) {
-    const utmText = match[1];
-    const isRefLink = !isNaN(parseFloat(utmText));
+  if (match && +match !== user.id) {
+    const isRefLink = !isNaN(parseFloat(match));
     if (isRefLink) {
-      await User.findByIdAndUpdate(user._id, { ref: +utmText }).exec();
-      const invitor = await getUserById(+utmText);
+      await User.findByIdAndUpdate(user._id, { ref: +match }).exec();
+      const invitor = await getUserById(+match);
       const balance = new BigNumber(invitor.balance)
         .plus(process.env.EGG_AMOUNT)
         .toString();
       await invitor.updateOne({ balance }).exec();
     } else {
       await User.findByIdAndUpdate(user._id, {
-        invitationChannel: utmText,
+        invitationChannel: match,
       }).exec();
     }
   }

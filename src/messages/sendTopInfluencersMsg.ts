@@ -9,7 +9,9 @@ const sendTopInfluencersMsg = async (user: TUserDocument) => {
   const lng = langs[user.lang];
   const top10 = await getStatisticFromDB(STATISTIC.INFLUENCERS);
   await bot
-    .sendMessage(user.id, `${lng.button.influencers}\n ${top10}`)
+    .sendMessage(user.id, `${lng.button.influencers}\n ${top10}`, {
+      parse_mode: "HTML",
+    })
     .catch(() => console.log(`❗️cannot send message to ${user.id}`));
 };
 export default sendTopInfluencersMsg;

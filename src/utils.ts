@@ -112,3 +112,8 @@ export const buildHtmlUserLink = (user: TUserDocument) =>
       ? `@${user.username}`
       : `${user.first_name || ""} ${user.last_name || ""}`
   }</a>`;
+
+export function randomInteger(min, max) {
+  let rand = min - 0.5 + Math.random() * (max - min + 1);
+  return Math.round(rand);
+}
