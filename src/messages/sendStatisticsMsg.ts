@@ -1,6 +1,6 @@
 import telegramService from "../services/telegramService";
 import { TUserDocument } from "../models/user";
-import { langs } from "../messages_lib";
+import langs from "../messages_lib";
 import { getStatisticFromDB, STATISTIC } from "../controllers/statsController";
 
 const { telegram: bot } = telegramService;
@@ -12,6 +12,6 @@ const sendStatisticsMsg = async (user: TUserDocument) => {
     .sendMessage(user.id, lng.button.statistics + stats, {
       parse_mode: "Markdown",
     })
-    .catch();
+    .catch(() => console.log(`❗️cannot send message to ${user.id}`));
 };
 export default sendStatisticsMsg;

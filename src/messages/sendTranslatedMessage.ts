@@ -1,6 +1,6 @@
 import telegramService from "../services/telegramService";
 import { TUserDocument } from "../models/user";
-import { langs } from "../messages_lib";
+import langs from "../messages_lib";
 
 const { telegram: bot } = telegramService;
 

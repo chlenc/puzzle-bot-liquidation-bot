@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["es2015","es2017"],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
   }
 }

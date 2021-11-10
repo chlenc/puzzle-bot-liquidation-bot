@@ -10,7 +10,7 @@ import {
   setWalletAddress,
   updateUserActivityInfo,
 } from "./controllers/userController";
-import { langs } from "./messages_lib";
+import langs from "./messages_lib";
 import { initMongo } from "./services/mongo";
 import {
   watchOnAuction,
@@ -262,7 +262,10 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
         await sendTranslatedMessage(user, "enterWalletAddress");
         break;
       case keys.withdraw:
-        if (Number(user.balance) === 0) return;
+        if (Number(user.balance) === 0) {
+          await sendTranslatedMessage(user, "noFundsToWithdraw");
+          return;
+        }
         const isAddressValid = await checkWalletAddress(user.walletAddress);
         if (!isAddressValid) {
           await sendTranslatedMessage(user, "wrongWalletAddress");

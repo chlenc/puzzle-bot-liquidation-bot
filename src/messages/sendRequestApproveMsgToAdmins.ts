@@ -18,6 +18,6 @@ const sendRequestApproveMsgToAdmins = async (user: TUserDocument) => {
       parse_mode: "HTML",
       reply_markup: { inline_keyboard },
     })
-    .catch();
+    .catch(() => console.log(`❗️cannot send message to ${user.id}`));
 };
 export default sendRequestApproveMsgToAdmins;

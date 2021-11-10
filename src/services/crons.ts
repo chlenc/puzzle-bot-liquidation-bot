@@ -58,10 +58,13 @@ export const watchOnDucks = async () => {
         nameDictionary
       );
 
-      message != "" &&
-        (await telegramService.telegram.sendMessage(user.id, message, {
-          parse_mode: "Markdown",
-        }));
+      if (message !== "") {
+        await telegramService.telegram
+          .sendMessage(user.id, message, {
+            parse_mode: "Markdown",
+          })
+          .catch(() => console.log(`❗️cannot send message to ${user.id}`));
+      }
 
       await sleep(1000);
     }

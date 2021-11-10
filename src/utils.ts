@@ -74,10 +74,11 @@ export const withdraw = async (
   const rawBalance = await getSponsorAccountBalance();
   const isEnoughMoney = rawBalance.gt(amount);
   if (!isEnoughMoney) {
-    await telegramService.telegram.sendMessage(
-      process.env.CONFIRM_GROUP_ID,
-      "❌ There is leak of money"
-    );
+    await telegramService.telegram
+      .sendMessage(process.env.CONFIRM_GROUP_ID, "❌ There is leak of money")
+      .catch(() =>
+        console.log(`❗️cannot send message to ${process.env.CONFIRM_GROUP_ID}`)
+      );
     throw "There is leak of money";
   }
   const ttx = transfer(

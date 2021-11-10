@@ -1,5 +1,5 @@
 import telegramService from "../services/telegramService";
-import { langs } from "../messages_lib";
+import langs from "../messages_lib";
 import { buildHtmlUserLink, diffDays } from "../utils";
 import { getMyRefsCount, getUserById } from "../controllers/userController";
 

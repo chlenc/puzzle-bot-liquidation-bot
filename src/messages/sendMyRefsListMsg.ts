@@ -1,6 +1,6 @@
 import telegramService from "../services/telegramService";
 import { TUserDocument } from "../models/user";
-import { langs } from "../messages_lib";
+import langs from "../messages_lib";
 import { getMyRefsList } from "../controllers/userController";
 
 const { telegram: bot } = telegramService;
@@ -15,6 +15,6 @@ const sendMyRefsListMsg = async (user: TUserDocument) => {
   }
   await bot
     .sendMessage(user.id, list, { parse_mode: "HTML" })
-    .catch((e) => console.log(e.message));
+    .catch(() => console.log(`❗️cannot send message to ${user.id}`));
 };
 export default sendMyRefsListMsg;

@@ -1,5 +1,5 @@
 import telegramService from "../services/telegramService";
-import { langs } from "../messages_lib";
+import langs from "../messages_lib";
 import { createInlineButton, diffDays } from "../utils";
 import { keys } from "../index";
 import { checkWalletAddress } from "../services/statsService";
@@ -42,6 +42,6 @@ const sendAccountMsg = async (user) => {
       ];
   await bot
     .sendMessage(user.id, msg, { reply_markup: { inline_keyboard } })
-    .catch();
+    .catch(() => console.log(`❗️cannot send message to ${user.id}`));
 };
 export default sendAccountMsg;

@@ -1,6 +1,6 @@
 import telegramService from "../services/telegramService";
 import { TUserDocument } from "../models/user";
-import { langs } from "../messages_lib";
+import langs from "../messages_lib";
 
 const { telegram: bot } = telegramService;
 
@@ -13,6 +13,6 @@ const sendWelcomeMsg = async (user: TUserDocument, lang?: string) => {
         keyboard: [[{ text: lng.button.alreadyWithYou }]],
       },
     })
-    .catch();
+    .catch(() => console.log(`❗️cannot send message to ${user.id}`));
 };
 export default sendWelcomeMsg;

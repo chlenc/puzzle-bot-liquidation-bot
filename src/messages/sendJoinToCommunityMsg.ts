@@ -1,6 +1,6 @@
 import telegramService from "../services/telegramService";
 import { TUserDocument } from "../models/user";
-import { langs } from "../messages_lib";
+import langs from "../messages_lib";
 
 const { telegram: bot } = telegramService;
 
@@ -14,6 +14,6 @@ const sendJoinToCommunityMsg = async (user: TUserDocument, lang?: string) => {
         ],
       },
     })
-    .catch();
+    .catch(() => console.log(`❗️cannot send message to ${user.id}`));
 };
 export default sendJoinToCommunityMsg;
