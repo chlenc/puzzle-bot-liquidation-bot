@@ -43,7 +43,7 @@ export const rewardInfluencers = async () => {
         user.walletAddress,
         new BigNumber(amount).times(1e8).toString()
       );
-      if (res.applicationStatus.toString() === ("succeeded" as any)) {
+      if (res.applicationStatus.includes("succeed")) {
         await sendSuccessWithdrawMsg(user, res.id);
       }
     } catch (e) {
