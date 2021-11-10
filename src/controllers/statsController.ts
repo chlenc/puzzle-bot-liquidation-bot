@@ -37,18 +37,7 @@ export const rewardInfluencers = async () => {
 
   const promiseArray = ids.map(async (id) => {
     const user = await getUserById(id);
-    if (!user.walletAddress) return;
-    try {
-      const res = await withdraw(
-        user.walletAddress,
-        new BigNumber(amount).times(1e8).toString()
-      );
-      if (res.applicationStatus.includes("succeed")) {
-        await sendSuccessWithdrawMsg(user, res.id);
-      }
-    } catch (e) {
-      console.log("Не смог перевести деньги инфльенсеру", e);
-    }
+    await user.updateOne({ balance: user.balance + amount }).exec();
   });
   await Promise.all(promiseArray);
   console.log("rewardInfluencers for these ids", ids, new Date());
