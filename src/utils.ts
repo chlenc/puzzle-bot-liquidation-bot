@@ -68,7 +68,11 @@ export const withdraw = async (
   amount: string
 ): Promise<
   Transaction & {
-    applicationStatus?: "succeed" | "succeeded" | "scriptExecutionFailed";
+    applicationStatus?:
+      | "succeed"
+      | "succeeded"
+      | "scriptExecutionFailed"
+      | "script_execution_failed";
   } & {
     id: string;
   }
