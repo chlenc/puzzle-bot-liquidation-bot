@@ -31,8 +31,6 @@ export const getStatisticFromDB = async (key: string): Promise<string> => {
 };
 
 export const rewardInfluencers = async () => {
-  const date = new Date();
-  if (date.getHours() !== 19) return;
   const influencers = await Statistic.findOne({ key: "INFLUENCERS" }).exec();
   const ids: number[] = JSON.parse(influencers.data);
   const amount = process.env.INFLUENCERS_EGG_AMOUNT;
