@@ -281,7 +281,7 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
             user.walletAddress,
             new BigNumber(user.balance).times(1e8).toString()
           );
-          if (res.applicationStatus === ("succeeded" as any)) {
+          if (res.applicationStatus.toString() === ("succeeded" as any)) {
             await user.updateOne({ balance: "0" }).exec();
             await sendSuccessWithdrawMsg(user, res.id);
             await sendAccountMsg(await getUserById(from.id));
@@ -309,7 +309,7 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
           text: "✅ Approved",
           url: getTxLink(res.id),
         });
-        if (res.applicationStatus === ("succeeded" as any)) {
+        if (res.applicationStatus.toString() === ("succeeded" as any)) {
           await targetUser.updateOne({ balance: "0" }).exec();
           await sendSuccessWithdrawMsg(targetUser, res.id);
         } else {
