@@ -44,7 +44,7 @@ import sendTranslatedMessage from "./messages/sendTranslatedMessage";
 import sendCaptcha from "./messages/sendCaptcha";
 
 const { telegram: bot } = telegramService;
-const cron = require("node-cron");
+// const cron = require("node-cron");
 
 import schedule from "node-schedule";
 
@@ -393,9 +393,9 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
 
 // cron.schedule("50 23 * * *", rewardInfluencers);
 
-schedule.scheduleJob("5 9 * * *", function () {
-  console.log(new Date());
-  console.log("The answer to life, the universe, and everything!");
-});
+// schedule.scheduleJob("5 9 * * *", function () {
+//   console.log(new Date());
+//   console.log("The answer to life, the universe, and everything!");
+// });
 
 process.stdout.write("Bot has been started ✅ ");
