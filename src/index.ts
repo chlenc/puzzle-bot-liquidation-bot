@@ -388,6 +388,6 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
   }, 5 * 60 * 1000);
 })();
 
-schedule.scheduleJob("13 12 * * *", rewardInfluencers);
+schedule.scheduleJob("50 23 * * *", rewardInfluencers);
 
 process.stdout.write("Bot has been started ✅ ");
