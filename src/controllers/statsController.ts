@@ -31,6 +31,7 @@ export const getStatisticFromDB = async (key: string): Promise<string> => {
 export const rewardInfluencers = async () => {
   const influencers = await Statistic.findOne({ key: "INFLUENCERS" }).exec();
   const ids: number[] = JSON.parse(influencers.data);
+  if (ids.length === 0) return;
   const promiseArray = ids.map(async (id) => {
     const user = await getUserById(id);
     const balance = new BigNumber(user.balance)
