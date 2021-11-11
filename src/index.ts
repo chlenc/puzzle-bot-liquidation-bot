@@ -46,6 +46,9 @@ import sendCaptcha from "./messages/sendCaptcha";
 const { telegram: bot } = telegramService;
 const cron = require("node-cron");
 
+// const schedule = require("node-schedule");
+import schedule from "node-schedule";
+
 initMongo().then();
 
 const parse_mode = "Markdown";
@@ -390,5 +393,9 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
 })();
 
 cron.schedule("50 23 * * *", rewardInfluencers);
+
+const job = schedule.scheduleJob("5 9 * * *", function () {
+  console.log("The answer to life, the universe, and everything!");
+});
 
 process.stdout.write("Bot has been started ✅ ");

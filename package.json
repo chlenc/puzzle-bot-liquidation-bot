@@ -30,6 +30,7 @@
     "moment": "^2.29.1",
     "mongoose": "^5.13.7",
     "node-cron": "^3.0.0",
+    "node-schedule": "^2.0.0",
     "node-telegram-bot-api": "^0.53.0",
     "selenium-webdriver": "^4.0.0-beta.4",
     "twit": "^2.2.11"
