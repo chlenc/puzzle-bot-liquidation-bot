@@ -46,7 +46,6 @@ import sendCaptcha from "./messages/sendCaptcha";
 const { telegram: bot } = telegramService;
 const cron = require("node-cron");
 
-// const schedule = require("node-schedule");
 import schedule from "node-schedule";
 
 initMongo().then();
@@ -392,9 +391,10 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
   }, 5 * 60 * 1000);
 })();
 
-cron.schedule("50 23 * * *", rewardInfluencers);
+// cron.schedule("50 23 * * *", rewardInfluencers);
 
-const job = schedule.scheduleJob("5 9 * * *", function () {
+schedule.scheduleJob("5 9 * * *", function () {
+  console.log(new Date());
   console.log("The answer to life, the universe, and everything!");
 });
 
