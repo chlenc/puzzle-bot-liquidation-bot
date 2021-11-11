@@ -133,7 +133,7 @@
             "welcome": "Welcome to the Waves Ducks gaming metaverse 🦆\nWavesducks.com\n\nWaves Ducks is a play to earn game where you build your duck empire, develop collective farms and fight for resources 💰.\n\nGet in the chat room and start earning $EGG cryptocurrency now",
             "joinToCommunity": "👉👉👉 Hurry up and join ➡️ the community:",
             "needToJoin": "I don't see you in the list of chat participants.\nSubscribe 👇\nhttps://t.me/duckshunters",
-            "whatGetTokensFor": "What do I get $EGG tokens for?\n\n✅ Inviting a new community member via a referral link = 0.001 EGG\n\n✅ Top 10 leading users = 0,02 EGG daily (soon)\n\n✅ Weekly drawing of 5 EGG 🎁",
+            "whatGetTokensFor": "What do I get $EGG tokens for?\n\n✅ Inviting a new community member via a referral link = 0.001 EGG\n\n✅ Top 10 leading users = 0,02 EGG daily \n\n✅ Weekly drawing of 5 EGG 🎁",
             "refMsg1": "Get your personal referral link!\nhttps://t.me/{{botName}}?start={{userId}}\n\nAll you have to do is invite your friends to the game 🦆",
             "refMsg2": "For every new player that joins through your link, you'll get 💰 0.001 EGG to your account!",
             "affiliateMsg": "🤝 Affiliate link\n\nGet your personal referral link!\n\nAll you have to do is invite your friends to the game 🦆\n\nFor every new player that joins through your link you'll get 💰 0,001 EGG into your account👇\nhttps://t.me/{{botName}}?start={{userId}}\n\n🗓 Days with us: {{daysWithUs}}\n\n😎 Your sponsor: {{sponsorName}}\n\nFriends invited: 👨‍🦰👩‍🦰 {{invitedFriends}}",
