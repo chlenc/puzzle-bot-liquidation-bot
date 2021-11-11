@@ -1,7 +1,5 @@
 import { Statistic } from "../models/statistic";
-import { withdraw } from "../utils";
 import BigNumber from "bignumber.js";
-import sendSuccessWithdrawMsg from "../messages/sendSuccessWithdrawMsg";
 import { getUserById } from "./userController";
 
 export enum STATISTIC {
@@ -33,11 +31,12 @@ export const getStatisticFromDB = async (key: string): Promise<string> => {
 export const rewardInfluencers = async () => {
   const influencers = await Statistic.findOne({ key: "INFLUENCERS" }).exec();
   const ids: number[] = JSON.parse(influencers.data);
-  const amount = process.env.INFLUENCERS_EGG_AMOUNT;
-
   const promiseArray = ids.map(async (id) => {
     const user = await getUserById(id);
-    await user.updateOne({ balance: user.balance + amount }).exec();
+    const balance = new BigNumber(user.balance)
+      .plus(process.env.INFLUENCERS_EGG_AMOUNT)
+      .toString();
+    await user.updateOne({ balance }).exec();
   });
   await Promise.all(promiseArray);
   console.log("rewardInfluencers for these ids", ids, new Date());
