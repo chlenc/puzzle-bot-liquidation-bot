@@ -117,3 +117,12 @@ export function randomInteger(min, max) {
   let rand = min - 0.5 + Math.random() * (max - min + 1);
   return Math.round(rand);
 }
+
+export function getRandomNumbersFromArray(
+  len: number,
+  count: number
+): number[] {
+  //todo реализовать логику выбора count победителей из len количества
+  // если len < count следует вывести не больше чем len победителей
+  return Array.from({ length: len >= count ? count : len }, (_, i) => i);
+}

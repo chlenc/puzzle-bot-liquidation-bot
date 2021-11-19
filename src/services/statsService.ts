@@ -239,7 +239,7 @@ export const checkWalletAddress = async (address: string): Promise<boolean> => {
     .catch(() => false);
 };
 
-function getMostFrequentInfluencers(arr: IUserParams[]) {
+export function getMostFrequentInfluencers(arr: IUserParams[]) {
   const hashmap = arr.reduce((acc, val) => {
     acc[val.ref] = (acc[val.ref] || 0) + 1;
     return acc;
@@ -251,9 +251,9 @@ function getMostFrequentInfluencers(arr: IUserParams[]) {
       value: hashmap[key],
     });
   }
-  const res = array
-    .sort((a, b) => (a.value > b.value ? 1 : b.value < a.value ? -1 : 0))
-    .splice(0, 10);
+  const res = array.sort((a, b) =>
+    a.value > b.value ? 1 : b.value < a.value ? -1 : 0
+  );
   return res.map((a) => a.userId);
 }
 
@@ -265,7 +265,9 @@ export const getTopInfluencers = async () => {
     },
     ref: { $exists: true },
   });
-  const influencers: Array<string> = getMostFrequentInfluencers(userAddedToday);
+  const influencers: Array<string> = getMostFrequentInfluencers(
+    userAddedToday
+  ).splice(0, 10);
   let res = "";
   const idsArray = [];
   for (let index in influencers) {
