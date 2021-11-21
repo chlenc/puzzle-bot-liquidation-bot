@@ -15,11 +15,6 @@ export const createUser = async (from: ITelegramUser, match: string | null) => {
     const isRefLink = !isNaN(parseFloat(match));
     if (isRefLink) {
       await User.findByIdAndUpdate(user._id, { ref: +match }).exec();
-      const invitor = await getUserById(+match);
-      const balance = new BigNumber(invitor.balance)
-        .plus(process.env.EGG_AMOUNT)
-        .toString();
-      await invitor.updateOne({ balance }).exec();
     } else {
       await User.findByIdAndUpdate(user._id, {
         invitationChannel: match,

@@ -1,19 +1,17 @@
+import { broadcast, transfer, waitForTx } from "@waves/waves-transactions";
 import {
-  broadcast,
-  seedUtils,
-  transfer,
-  waitForTx,
-} from "@waves/waves-transactions";
-import { EXPLORER_URL_MAP, NODE_URL_MAP } from "./services/statsService";
+  checkWalletAddress,
+  EXPLORER_URL_MAP,
+  NODE_URL_MAP,
+} from "./services/statsService";
 import { Transaction } from "@waves/ts-types";
-import {
-  assetBalance,
-  balance,
-} from "@waves/waves-transactions/dist/nodeInteraction";
-import { address, privateKey, publicKey } from "@waves/ts-lib-crypto";
+import { assetBalance } from "@waves/waves-transactions/dist/nodeInteraction";
+import { address } from "@waves/ts-lib-crypto";
 import BigNumber from "bignumber.js";
 import telegramService from "./services/telegramService";
 import { TUserDocument } from "./models/user";
+import sendTranslatedMessage from "./messages/sendTranslatedMessage";
+import { getUserById } from "./controllers/userController";
 
 export const getDuckName = (duckName: string, dict: Record<string, any>) => {
   try {
@@ -64,8 +62,7 @@ export const getSponsorAccountBalance = (): Promise<BigNumber> =>
   ).then((b) => new BigNumber(b));
 
 export const withdraw = async (
-  recipient: string,
-  amount: string
+  user: TUserDocument
 ): Promise<
   Transaction & {
     applicationStatus?:
@@ -77,6 +74,15 @@ export const withdraw = async (
     id: string;
   }
 > => {
+  const recipient = user.walletAddress;
+  const amount = new BigNumber(user.balance).times(1e8).toString();
+
+  const isAddressValid = await checkWalletAddress(user.walletAddress);
+  if (!isAddressValid) {
+    await sendTranslatedMessage(user, "wrongWalletAddress");
+    return null;
+  }
+
   const rawBalance = await getSponsorAccountBalance();
   const isEnoughMoney = rawBalance.gt(amount);
   if (!isEnoughMoney) {
@@ -96,6 +102,14 @@ export const withdraw = async (
     },
     process.env.SEED
   );
+
+  await sleep(30000);
+  const { balance } = await getUserById(user.id);
+  if (Number(balance) === 0) {
+    await sendTranslatedMessage(user, "noFundsToWithdraw");
+    return null;
+  }
+
   const tx = await broadcast(ttx, NODE_URL_MAP[process.env.CHAIN_ID]);
   const res = await waitForTx(tx.id, {
     apiBase: NODE_URL_MAP[process.env.CHAIN_ID],
@@ -116,4 +130,30 @@ export const buildHtmlUserLink = (user: TUserDocument) =>
 export function randomInteger(min, max) {
   let rand = min - 0.5 + Math.random() * (max - min + 1);
   return Math.round(rand);
+}
+
+export function getUniqueRandomWinnersFromArray(
+  array: Array<number>,
+  count: number
+): number[] {
+  const arr = [];
+  const uniqueValues = unique(array.map(String)).length;
+  while (arr.length < (uniqueValues < count ? uniqueValues : count)) {
+    const index = randomInteger(0, array.length - 1);
+    const r = array[index];
+    if (arr.indexOf(r) === -1) arr.push(r);
+  }
+  return arr;
+}
+
+function unique(arr: Array<string>) {
+  let result = [];
+
+  for (let str of arr) {
+    if (!result.includes(str)) {
+      result.push(str);
+    }
+  }
+
+  return result;
 }

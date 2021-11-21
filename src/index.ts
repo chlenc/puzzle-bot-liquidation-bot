@@ -1,9 +1,6 @@
 import * as commitCount from "git-commit-count";
 import telegramService from "./services/telegramService";
-import {
-  checkWalletAddress,
-  getCurrentWavesRate,
-} from "./services/statsService";
+import { getCurrentWavesRate } from "./services/statsService";
 import {
   createUser,
   getUserById,
@@ -13,8 +10,9 @@ import {
 import langs from "./messages_lib";
 import { initMongo } from "./services/mongo";
 import {
+  sendStatisticMessageToChannels,
   watchOnAuction,
-  watchOnInfluencers,
+  watchOnInfluensers,
   watchOnStats,
 } from "./services/crons";
 import {
@@ -214,30 +212,6 @@ bot.onText(/\/stats/, async ({ chat: { id } }) => {
     .sendMessage(id, stats, { parse_mode })
     .catch(() => console.log(`❗️cannot send message to ${id}`));
 });
-//
-// bot.onText(/\/address[ \t](.+)/, async ({ chat, from }, match) => {
-//   const address = match[1];
-//
-//   const isValidAddress = await checkWalletAddress(address).catch(() => false);
-//   if (!isValidAddress) {
-//     return await bot.sendMessage(chat.id, msg.wrong_wallet_address);
-//   }
-//   await findByTelegramIdAndUpdate(from.id, {
-//     walletAddress: address,
-//   });
-//   await bot.sendMessage(chat.id, msg.correct_wallet_address);
-// });
-//
-// bot.onText(/\/cancel/, async ({ chat, from }) => {
-//   await findByTelegramIdAndUpdate(from.id, {
-//     walletAddress: null,
-//     auctionDucks: null,
-//     farmingDucks: null,
-//     userDucks: null,
-//     bids: null,
-//   });
-//   await bot.sendMessage(chat.id, msg.cancel_subsc);
-// });
 
 export enum keys {
   enterAddress = "enterAddress",
@@ -283,25 +257,14 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
         await sendTranslatedMessage(user, "enterWalletAddress");
         break;
       case keys.withdraw:
-        if (Number(user.balance) === 0) {
-          await sendTranslatedMessage(user, "noFundsToWithdraw");
-          return;
-        }
-        const isAddressValid = await checkWalletAddress(user.walletAddress);
-        if (!isAddressValid) {
-          await sendTranslatedMessage(user, "wrongWalletAddress");
-          break;
-        }
         if (new BigNumber(user.balance).gt(process.env.MAX_WITHDRAW)) {
           await sendTranslatedMessage(user, "waitingForAdminConfirm");
           await sendRequestApproveMsgToAdmins(user);
           return;
         } else {
           await sendTranslatedMessage(user, "withdrawProcess");
-          const res = await withdraw(
-            user.walletAddress,
-            new BigNumber(user.balance).times(1e8).toString()
-          );
+          const res = await withdraw(user);
+          if (res == null) return;
           if (res.applicationStatus.includes("succeed")) {
             await user.updateOne({ balance: "0" }).exec();
             await sendSuccessWithdrawMsg(user, res.id);
@@ -322,14 +285,12 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
           break;
         }
         await editApproveRequestMessage(message.message_id);
-        const res = await withdraw(
-          targetUser.walletAddress,
-          new BigNumber(targetUser.balance).times(1e8).toString()
-        );
+        const res = await withdraw(targetUser);
         await editApproveRequestMessage(message.message_id, {
           text: "✅ Approved",
           url: getTxLink(res.id),
         });
+        if (res == null) return;
         if (res.applicationStatus.includes("succeed")) {
           await targetUser.updateOne({ balance: "0" }).exec();
           await sendSuccessWithdrawMsg(targetUser, res.id);
@@ -360,16 +321,6 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
   } catch (e) {}
 });
 
-// cron.schedule("* * * * *", watchOnStats);
-
-// cron.schedule("0 * * * *", watchOnInfluencers);
-
-// cron.schedule("0 12,19 * * *", sendStatisticMessageToChannels);
-
-// cron.schedule("* * * * *", watchOnAuction);
-
-// cron.schedule("*/5 * * * *", watchOnDucks);
-
 (async () => {
   setInterval(async () => {
     await watchOnAuction();
@@ -377,9 +328,7 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
 })();
 
 (async () => {
-  setInterval(async () => {
-    await watchOnInfluencers();
-  }, 15 * 60 * 1000);
+  await watchOnInfluensers();
 })();
 
 (async () => {
@@ -387,6 +336,8 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
     await watchOnStats();
   }, 5 * 60 * 1000);
 })();
+
+schedule.scheduleJob("0 12,19 * * *", sendStatisticMessageToChannels);
 
 schedule.scheduleJob("50 23 * * *", rewardInfluencers);
 
