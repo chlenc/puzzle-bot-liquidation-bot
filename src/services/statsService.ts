@@ -1,9 +1,8 @@
 import axios from "axios";
-import { buildHtmlUserLink, prettifyNums } from "../utils";
+import { prettifyNums } from "../utils";
 import * as moment from "moment";
 import { decimals, TAuctionRespData, THatchingRespData } from "../interfaces";
-import { IUserParams, User } from "../models/user";
-import { getUserById } from "../controllers/userController";
+import { User } from "../models/user";
 
 export const getCurrentWavesRate = async () => {
   const { data } = await axios.get(
@@ -239,25 +238,7 @@ export const checkWalletAddress = async (address: string): Promise<boolean> => {
     .catch(() => false);
 };
 
-export function getMostFrequentInfluencers(arr: IUserParams[]) {
-  const hashmap = arr.reduce((acc, val) => {
-    acc[val.ref] = (acc[val.ref] || 0) + 1;
-    return acc;
-  }, {}) as any;
-  const array = [];
-  for (let key in hashmap) {
-    array.push({
-      userId: key,
-      value: hashmap[key],
-    });
-  }
-  const res = array.sort((a, b) =>
-    a.value > b.value ? 1 : b.value < a.value ? -1 : 0
-  );
-  return res.map((a) => a.userId);
-}
-
-export const getTopInfluencers = async () => {
+export async function getMostFrequentInfluencers() {
   const todayDate = moment().startOf("day").toISOString();
   const userAddedToday = await User.find({
     createdAt: {
@@ -265,16 +246,27 @@ export const getTopInfluencers = async () => {
     },
     ref: { $exists: true },
   });
-  const influencers: Array<string> = getMostFrequentInfluencers(
-    userAddedToday
-  ).splice(0, 10);
-  let res = "";
-  const idsArray = [];
-  for (let index in influencers) {
-    const user = await getUserById(+influencers[index]);
-    const num = +index + 1;
-    idsArray.push(user.id);
-    res += `\n${num} - ${buildHtmlUserLink(user)}`;
-  }
-  return { value: res, data: JSON.stringify(idsArray) };
-};
+  const invitorsRawMap = userAddedToday
+    .reduce((acc, { ref }) => {
+      const index = acc.findIndex((item) => item.ref === ref);
+      if (index === -1) {
+        acc.push({ ref, count: 1 });
+      } else {
+        acc[index].count += 1;
+      }
+      return acc;
+    }, [] as Array<{ ref: number; count: number }>)
+    .sort((a, b) => (a.count > b.count ? 1 : b.count < a.count ? -1 : 0));
+  const influencers = await User.find({
+    id: { $in: invitorsRawMap.map(({ ref }) => ref) },
+  }).exec();
+  return invitorsRawMap
+    .map(({ count, ref }) => ({
+      count,
+      user: influencers.find(({ id }) => id === ref),
+    }))
+    .filter(
+      ({ user, count }) =>
+        user != null && count >= Number(process.env.MIN_INVITATIONS_COUNT)
+    );
+}

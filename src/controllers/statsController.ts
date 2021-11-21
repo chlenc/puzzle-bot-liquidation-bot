@@ -1,10 +1,7 @@
 import { Statistic } from "../models/statistic";
-import BigNumber from "bignumber.js";
-import { getUserById } from "./userController";
-import * as moment from "moment";
-import { User } from "../models/user";
 import { getMostFrequentInfluencers } from "../services/statsService";
-import { getRandomNumbersFromArray } from "../utils";
+import { getUniqueRandomWinnersFromArray } from "../utils";
+import BigNumber from "bignumber.js";
 
 export enum STATISTIC {
   GAME = "GAME",
@@ -33,22 +30,25 @@ export const getStatisticFromDB = async (key: string): Promise<string> => {
 };
 
 export const rewardInfluencers = async () => {
-  const todayDate = moment().startOf("day").toISOString();
-  const userAddedToday = await User.find({
-    createdAt: {
-      $gte: todayDate,
-    },
-    ref: { $exists: true },
-  });
-  const influencers: Array<string> = getMostFrequentInfluencers(userAddedToday);
-  const winnersPositionsArray = getRandomNumbersFromArray(
-    influencers.length,
+  const influencers = await getMostFrequentInfluencers();
+  const winners = getUniqueRandomWinnersFromArray(
+    influencers.reduce(
+      (acc, { count, user }) => [
+        ...acc,
+        ...Array.from({ length: count }, () => user.id),
+      ],
+      [] as Array<number>
+    ),
     Number(process.env.EVERYDAY_WINNERS_COUNT)
   );
-  return await Promise.all(
-    winnersPositionsArray.map(async (i) => {
-      const influencer = influencers[i];
-      //todo reward influancer
+  await Promise.all(
+    winners.map(async (id) => {
+      const record = influencers.find(({ user }) => user.id === id);
+      if (!record.user) return;
+      const balance = new BigNumber(record.user.balance)
+        .plus(process.env.EGG_AMOUNT)
+        .toString();
+      await record.user.updateOne({ balance }).exec();
     })
   );
 };

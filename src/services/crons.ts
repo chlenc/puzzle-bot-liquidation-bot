@@ -2,7 +2,6 @@ import { User } from "../models/user";
 import {
   getCurrentWavesRate,
   getStatsInfoFromBlockchain,
-  getTopInfluencers,
 } from "./statsService";
 import axios from "axios";
 import telegramService from "./telegramService";
@@ -154,9 +153,6 @@ export const watchOnStats = async () => {
     { value: await getStatsInfoFromBlockchain() },
     STATISTIC.GAME
   );
-};
-export const watchOnInfluencers = async () => {
-  await updateStats(await getTopInfluencers(), STATISTIC.INFLUENCERS);
 };
 
 export const sendStatisticMessageToChannels = async () => {
