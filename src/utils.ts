@@ -5,15 +5,11 @@ import {
   NODE_URL_MAP,
 } from "./services/statsService";
 import { Transaction } from "@waves/ts-types";
-import {
-  assetBalance,
-  balance,
-} from "@waves/waves-transactions/dist/nodeInteraction";
-import { address, privateKey, publicKey } from "@waves/ts-lib-crypto";
+import { assetBalance } from "@waves/waves-transactions/dist/nodeInteraction";
+import { address } from "@waves/ts-lib-crypto";
 import BigNumber from "bignumber.js";
 import telegramService from "./services/telegramService";
 import { TUserDocument } from "./models/user";
-import { Animation } from "node-telegram-bot-api";
 import sendTranslatedMessage from "./messages/sendTranslatedMessage";
 import { getUserById } from "./controllers/userController";
 
@@ -141,10 +137,23 @@ export function getUniqueRandomWinnersFromArray(
   count: number
 ): number[] {
   const arr = [];
-  while (arr.length < count) {
-    const index = randomInteger(0, array.length);
+  const uniqueValues = unique(array.map(String)).length;
+  while (arr.length < (uniqueValues < count ? uniqueValues : count)) {
+    const index = randomInteger(0, array.length - 1);
     const r = array[index];
     if (arr.indexOf(r) === -1) arr.push(r);
   }
   return arr;
+}
+
+function unique(arr: Array<string>) {
+  let result = [];
+
+  for (let str of arr) {
+    if (!result.includes(str)) {
+      result.push(str);
+    }
+  }
+
+  return result;
 }
