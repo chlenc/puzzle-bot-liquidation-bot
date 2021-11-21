@@ -12,6 +12,7 @@ import { initMongo } from "./services/mongo";
 import {
   sendStatisticMessageToChannels,
   watchOnAuction,
+  watchOnInfluensers,
   watchOnStats,
 } from "./services/crons";
 import {
@@ -324,6 +325,10 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
   setInterval(async () => {
     await watchOnAuction();
   }, 5 * 60 * 1000);
+})();
+
+(async () => {
+  await watchOnInfluensers();
 })();
 
 (async () => {

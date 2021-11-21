@@ -1,11 +1,12 @@
 import { User } from "../models/user";
 import {
   getCurrentWavesRate,
+  getMostFrequentInfluencers,
   getStatsInfoFromBlockchain,
 } from "./statsService";
 import axios from "axios";
 import telegramService from "./telegramService";
-import { getDuckName, sleep } from "../utils";
+import { buildHtmlUserLink, getDuckName, sleep } from "../utils";
 import watcherService from "./watcherService";
 import { compareAllFields } from "./comparingService";
 import { updateUserDetails } from "./updateService";
@@ -14,6 +15,9 @@ import {
   STATISTIC,
   updateStats,
 } from "../controllers/statsController";
+import { Connection } from "mongoose";
+import { Logger } from "selenium-webdriver/lib/logging";
+import { logging } from "selenium-webdriver";
 
 const decimals = 1e8;
 
@@ -153,6 +157,16 @@ export const watchOnStats = async () => {
     { value: await getStatsInfoFromBlockchain() },
     STATISTIC.GAME
   );
+};
+
+export const watchOnInfluensers = async () => {
+  const inf = await getMostFrequentInfluencers();
+  inf.length > 10 && inf.slice(10);
+  const value = inf.reduce(
+    (acc, v, index) => (acc += `${index + 1}. ${buildHtmlUserLink(v.user)}\n`),
+    ""
+  );
+  await updateStats({ value }, STATISTIC.INFLUENCERS);
 };
 
 export const sendStatisticMessageToChannels = async () => {
