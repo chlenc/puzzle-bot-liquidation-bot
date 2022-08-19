@@ -1,7 +1,5 @@
 import * as mongoose from "mongoose";
 import { Document } from "mongoose";
-import { DuckNftSchema, IDuckNft } from "./duckNft";
-import { BidSchema, IBid } from "./bid";
 
 export interface ITelegramUser {
   id: number;
@@ -14,10 +12,6 @@ export interface ITelegramUser {
 
 export interface IUserParams {
   walletAddress?: string;
-  userDucks?: IDuckNft[];
-  farmingDucks?: IDuckNft[];
-  auctionDucks?: IDuckNft[];
-  bids?: IBid[];
   messagesNumber?: number;
   messageHistory?: string;
   invitationChannel?: string;
@@ -28,14 +22,10 @@ export interface IUserParams {
   balance: string;
 }
 
-export interface IReferralParams {
-  lang: "ENG" | "RUS" | "SPA";
-}
 
 export type TUserDocument = Document &
   ITelegramUser &
-  IUserParams &
-  IReferralParams;
+  IUserParams
 
 const UserSchema = new mongoose.Schema(
   {
@@ -45,10 +35,6 @@ const UserSchema = new mongoose.Schema(
     last_name: { type: String, required: false },
     username: { type: String, required: false },
     walletAddress: { type: String, required: false },
-    userDucks: DuckNftSchema,
-    farmingDucks: DuckNftSchema,
-    auctionDucks: DuckNftSchema,
-    bids: BidSchema,
     messagesNumber: { type: Number, required: false, default: 1 },
     messageHistory: { type: String, required: false },
     invitationChannel: { type: String, required: false },

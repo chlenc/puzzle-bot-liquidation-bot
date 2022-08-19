@@ -1,1 +1,1 @@
-# Waves ducks bot
+# Lineup bot
