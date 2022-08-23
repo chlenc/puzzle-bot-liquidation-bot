@@ -1,4 +1,11 @@
-import { ITelegramUser, TUserDocument, User } from "../models/user";
+import {
+  ITelegramUser,
+  IUserParams,
+  TUserDocument,
+  User,
+} from "../models/user";
+import { Asset } from "../models/asset";
+import { keyboards } from "../constants";
 
 export const getUserById = async (id: number) => {
   const users = await User.find({ id: { $eq: id } }).exec();
@@ -48,4 +55,3 @@ export const getMyRefsCount = async (userId: number) => {
 //   await user.updateOne(updateUserParams).exec();
 //   return isValidAddress;
 // };
-

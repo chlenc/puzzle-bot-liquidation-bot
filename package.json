@@ -19,9 +19,10 @@
   },
   "homepage": "",
   "dependencies": {
+    "@ethersproject/bignumber": "^5.7.0",
     "@waves/ts-lib-crypto": "^1.4.4-beta.1",
     "@waves/waves-transactions": "^4.2.1-beta.7",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "bignumber.js": "^9.0.1",
     "chromedriver": "^91.0.1",
     "dotenv": "^7.0.0",
@@ -32,6 +33,7 @@
     "node-schedule": "^2.0.0",
     "node-telegram-bot-api": "^0.53.0",
     "selenium-webdriver": "^4.0.0-beta.4",
+    "tsdef": "^0.0.14",
     "twit": "^2.2.11"
   },
   "devDependencies": {

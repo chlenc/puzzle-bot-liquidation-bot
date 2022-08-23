@@ -11,6 +11,7 @@ export interface ITelegramUser {
 }
 
 export interface IUserParams {
+  assets: { assetId: string; percent: number; lastPrice: number }[];
   walletAddress?: string;
   messagesNumber?: number;
   messageHistory?: string;
@@ -18,14 +19,14 @@ export interface IUserParams {
   lastActivityDate?: Date;
   ref?: number;
   myRefs?: number[];
-  state?: string | number;
+  state?: {
+    key: string;
+    data: Record<string, any>;
+  };
   balance: string;
 }
 
-
-export type TUserDocument = Document &
-  ITelegramUser &
-  IUserParams
+export type TUserDocument = Document & ITelegramUser & IUserParams;
 
 const UserSchema = new mongoose.Schema(
   {
@@ -42,7 +43,20 @@ const UserSchema = new mongoose.Schema(
     lang: { type: String, required: true, default: "ENG" },
     ref: { type: Number, required: false },
     myRefs: { type: Number, required: false },
-    state: { type: String, required: false },
+    assets: [
+      {
+        assetId: { type: String, required: true },
+        percent: { type: Number, required: true },
+        lastPrice: { type: Number, required: true },
+      },
+    ],
+    state: {
+      type: {
+        key: { type: String, required: true },
+        data: { type: String, required: false },
+      },
+      required: false,
+    },
     balance: { type: Number, required: false, default: "0" },
   },
   { timestamps: true }

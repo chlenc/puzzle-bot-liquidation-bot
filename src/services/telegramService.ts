@@ -1,5 +1,5 @@
 import * as TelegramBot from "node-telegram-bot-api";
-import { sleep } from "../utils";
+import { sleep } from "../utils/utils";
 require("dotenv").config();
 
 class TelegramService {

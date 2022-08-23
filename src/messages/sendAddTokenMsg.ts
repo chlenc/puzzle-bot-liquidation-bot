@@ -4,11 +4,13 @@ import { keyboards } from "../constants";
 
 const { telegram: bot } = telegramService;
 
-const sendWelcomeMsg = async (user: TUserDocument, lang?: string) => {
+const sendWelcomeMsg = async (user: TUserDocument) => {
   await bot
-    .sendMessage(user.id, `🤖 Hey hey, ${user.first_name}, welcome on board!`, {
-      reply_markup: { resize_keyboard: true, keyboard: keyboards.welcome },
-    })
+    .sendMessage(
+      user.id,
+      `Enter coin symbol or name (e.g WAVES, USDN) or token contract address:`,
+      { reply_markup: keyboards.addToken }
+    )
     .catch(() => console.log(`❗️cannot send message to ${user.id}`));
 };
 export default sendWelcomeMsg;
