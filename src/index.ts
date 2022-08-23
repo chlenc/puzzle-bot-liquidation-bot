@@ -36,15 +36,19 @@ bot.on("message", async (msg) => {
     switch (user.state.key) {
       case userStates.addToken:
         const asset = await Asset.findOne({
-          $or: [{ id: msg.text }, { shortcode: msg.text }, { name: msg.text }],
+          $or: [
+            { id: { $regex: `^${msg.text}$`, $options: "i" } },
+            { shortcode: { $regex: `^${msg.text}$`, $options: "i" } },
+            { name: { $regex: `^${msg.text}$`, $options: "i" } },
+          ],
         }).exec();
         if (asset == null) {
-          await user.update({ state: undefined });
           await bot.sendMessage(
             msg.from.id,
             `Cannot find asset "${msg.text}"\nPlease check our token list [here](https://app.lineup.finance/#/tokens)`,
             { parse_mode: "Markdown" }
           );
+          await sendAddTokenMsg(user);
         } else {
           await user.update({
             state: { key: userStates.addPercent, data: { assetId: asset.id } },
@@ -119,8 +123,9 @@ bot.on("callback_query", async ({ from, message, data: raw }) => {
         if (a == null) return;
         const i = user.assets.findIndex(({ assetId }) => assetId === a.id);
         if (i === -1) return;
-        user.assets.splice(i, 1);
-        await user.update().exec();
+        const assets = user.assets;
+        assets.splice(i, 1);
+        await user.update({ assets }).exec();
         await bot.deleteMessage(message.chat.id, String(message.message_id));
         await bot.sendMessage(
           message.chat.id,

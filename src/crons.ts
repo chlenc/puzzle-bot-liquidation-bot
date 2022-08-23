@@ -15,7 +15,7 @@ export const sendUpdates = async (bot: TelegramBot) => {
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
     const assets = user.assets;
-    const msg = assets.reduce((acc, asset) => {
+    const msg = assets.reduce((acc, asset, index) => {
       const statistic = stats.find(({ id }) => id === asset.assetId);
       if (statistic == null || statistic.data == null) {
         return acc;
@@ -24,6 +24,7 @@ export const sendUpdates = async (bot: TelegramBot) => {
       const change = currentPrice.div(asset.lastPrice).minus(1).times(100);
       const mod = change.gte(0) ? change : change.times(-1);
       if (mod.gte(asset.percent)) {
+        assets[index].lastPrice = currentPrice.toNumber();
         acc += `${change.gte(0) ? "🟢" : "🔴"} ${
           statistic.shortcode
         } price changed ${change.toFormat(
@@ -36,6 +37,7 @@ export const sendUpdates = async (bot: TelegramBot) => {
       await bot
         .sendMessage(user.id, msg)
         .catch(() => `Cannot send message to ${user.id}`);
+      await user.update({ assets }).exec();
     }
   }
 };
