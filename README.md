@@ -1,1 +1,1 @@
-# Lineup bot
+# puzzle arbitrage bot
