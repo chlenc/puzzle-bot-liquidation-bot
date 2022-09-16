@@ -4,7 +4,7 @@ import { Undefinable } from "tsdef";
 
 BigNumber.config({ EXPONENTIAL_AT: [-100, 100] });
 
-type TValue = BN | EthersBigNumber | BigNumber.Value;
+export type TValue = BN | EthersBigNumber | BigNumber.Value;
 
 const bigNumberify = (n: any): string | number => {
   if (n && n.toString) {

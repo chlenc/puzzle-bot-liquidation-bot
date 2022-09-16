@@ -1,183 +1,147 @@
 import telegramService from "./services/telegramService";
-import {
-  createUser,
-  getUserById,
-  updateUserActivityInfo,
-} from "./controllers/userController";
-import { initMongo } from "./services/mongo";
-import sendWelcomeMsg from "./messages/sendWelcomeMsg";
-import {
-  buttons,
-  inlineKeyboardKeys,
-  keyboards,
-  userStates,
-} from "./constants";
-import sendAddTokenMsg from "./messages/sendAddTokenMsg";
-import { sendUpdates, updateDb } from "./crons";
-import { Asset } from "./models/asset";
-import sendAddPercentMsg from "./messages/sendAddPercentMsg";
-import { createInlineButton, sleep } from "./utils/utils";
-import { User } from "./models/user";
+import { sleep } from "./utils/utils";
+import { getActiveOrdersIds, getOrderById } from "./services/dappService";
+import aggregatorService from "./services/aggregatorService";
+import BN, { TValue } from "./utils/BN";
+import blockchainService from "./services/blockchainService";
+import { AGGREGATOR, LIMIT_ORDERS, USDT_ASSET_ID } from "./constants";
+import { libs } from "@waves/waves-transactions";
+import { CHAT_ID, SEED } from "./config";
 
 const { telegram: bot } = telegramService;
-initMongo().then();
 
-bot.on("message", async (msg) => {
-  const user = await getUserById(msg.from.id);
-  if (/\/start[ \t]*(.*)/.test(msg.text)) return;
-  if (user == null) {
-    await bot
-      .sendMessage(msg.from.id, "👇🏻 Please, press here 👇🏻\\n/start")
-      .catch(() => console.log(`❗️cannot send message to ${msg.from.id}`));
-    return;
-  }
+const log = (msg: string) => bot.sendMessage(CHAT_ID, msg);
+//For normal bot life, the account must have enough money to pay commissions
+//The bot will keep its funds in USDT, respectively, there should be enough of them on the account
 
-  if (user.state != null) {
-    switch (user.state.key) {
-      case userStates.addToken:
-        const asset = await Asset.findOne({
-          $or: [
-            { id: { $regex: `^${msg.text}$`, $options: "i" } },
-            { shortcode: { $regex: `^${msg.text}$`, $options: "i" } },
-            { name: { $regex: `^${msg.text}$`, $options: "i" } },
-          ],
-        }).exec();
-        if (asset == null) {
-          await bot.sendMessage(
-            msg.from.id,
-            `Cannot find asset "${msg.text}"\nPlease check our token list [here](https://app.lineup.finance/#/tokens)`,
-            { parse_mode: "Markdown" }
-          );
-          await sendAddTokenMsg(user);
-        } else {
-          await user.update({
-            state: { key: userStates.addPercent, data: { assetId: asset.id } },
-          });
-          await sendAddPercentMsg(user, asset);
-        }
-        return;
-    }
-  }
+const calcMinimumToReceive = (n: TValue) =>
+  new BN(n).times(new BN(100 - 5).div(100));
 
-  switch (msg.text) {
-    case buttons.welcome.addToken.text:
-      await sendAddTokenMsg(user);
-      await user.update({ state: { key: userStates.addToken, data: {} } });
-      break;
-
-    case buttons.welcome.contactUs.text:
-      await bot.sendMessage(
-        msg.from.id,
-        "Telegram: https://t.me/lineupFinance\nSite: https://lineup.finance\nTwitter: soon\nChannnel: soon",
-        { disable_web_page_preview: true }
-      );
-      break;
-
-    case buttons.welcome.editTokens.text:
-      const assets = await Asset.find({}).exec();
-      const inline_keyboard = user.assets.map(({ assetId }) => {
-        const asset = assets.find(({ id }) => id === assetId);
-        return asset != null
-          ? [
-              createInlineButton(
-                `Remove ${asset.shortcode}`,
-                inlineKeyboardKeys.removeAsset,
-                { symbol: asset.shortcode }
-              ),
-            ]
-          : [];
-      });
-      await bot.sendMessage(msg.from.id, "Your assets", {
-        reply_markup: { inline_keyboard: [...inline_keyboard] },
-      });
-      break;
-
-    default:
-      await user.update({ state: undefined });
-  }
-  await updateUserActivityInfo(user);
-});
-//Sorry, I don't understand. Please call /menu
-
-bot.on("callback_query", async ({ from, message, data: raw }) => {
-  try {
-    const { key, data } = JSON.parse(raw);
-
-    //Trying to find user
-    const user = await getUserById(from.id);
-    if (user == null) {
-      await bot
-        .sendMessage(message.from.id, "👇🏻 Please, press here 👇🏻\\n/start")
-        .catch(() => console.log(`❗️cannot send message to ${from.id}`));
-      return;
-    }
-    switch (key) {
-      case inlineKeyboardKeys.addTokenCancel:
-        await user.update({ state: undefined });
-        await bot.deleteMessage(message.chat.id, String(message.message_id));
-        // await user.updateOne({ state: keys.enterAddress }).exec();
-        // await sendTranslatedMessage(user, "enterWalletAddress");
-        break;
-      case inlineKeyboardKeys.removeAsset:
-        const a = await Asset.findOne({ shortcode: data.symbol }).exec();
-        if (a == null) return;
-        const i = user.assets.findIndex(({ assetId }) => assetId === a.id);
-        if (i === -1) return;
-        const assets = user.assets;
-        assets.splice(i, 1);
-        await user.update({ assets }).exec();
-        await bot.deleteMessage(message.chat.id, String(message.message_id));
-        await bot.sendMessage(
-          message.chat.id,
-          `${a.shortcode} was removed from list`,
-          { reply_markup: { keyboard: keyboards.welcome } }
-        );
-        // await user.updateOne({ state: keys.enterAddress }).exec();
-        // await sendTranslatedMessage(user, "enterWalletAddress");
-        break;
-      case inlineKeyboardKeys.addPercent:
-        const userAssets = user.assets == null ? [] : user.assets;
-        const asset = await Asset.findOne({
-          id: user.state.data.assetId,
-        }).exec();
-        const index = user.assets.findIndex(
-          ({ assetId }) => assetId === user.state.data.assetId
-        );
-        if (index !== -1) userAssets.splice(index, 1);
-        userAssets.push({
-          assetId: user.state.data.assetId,
-          percent: data.percent,
-          lastPrice: asset.data["lastPrice_usd-n"],
-        });
-        await user.update({
-          state: undefined,
-          assets: userAssets,
-        });
-        await bot.sendMessage(
-          message.chat.id,
-          `Coin ${asset.shortcode} was added!`,
-          { reply_markup: { keyboard: keyboards.welcome } }
-        );
-        await bot.deleteMessage(message.chat.id, String(message.message_id));
-        break;
-    }
-  } catch (e) {}
-});
-
-//COMMANDS
-bot.onText(/\/start[ \t]*(.*)/, async ({ chat, from }, match) => {
-  let user = await getUserById(from.id);
-  if (user == null) {
-    user = await createUser(from, match ? String(match[1]) : null);
-  }
-  await updateUserActivityInfo(user);
-  await sendWelcomeMsg(user);
-});
-
+// user says "im selling 1 PUZZLE for 18 USDN"
+// token0 = PUZZLE, token1 = USDN
+// amount0 = 1 * 10**8, amount1 = 18 * 10**6
 (async () => {
   while (true) {
-    await updateDb();
-    await sendUpdates(bot);
+    const address = libs.crypto.address(SEED, "W");
+    const activeOrderIds = await getActiveOrdersIds();
+
+    //WAVES BALANCE CHECK
+    const wavesBalance = await blockchainService.getWavesBalance(address);
+    if (wavesBalance < 0.015 * 1e8) {
+      await sleep(30 * 60 * 1000);
+      await log("❌ WAVES 🔷 balance too low");
+      continue;
+    }
+
+    //ORDERS LOOP
+    for (let i = 0; i < activeOrderIds.length; i++) {
+      const order = await getOrderById(activeOrderIds[i]);
+      if (order.status !== "active") continue;
+      const amount0 = order.amount0.minus(order.fulfilled0); //1 puzzle
+      const amount1 = order.amount1.minus(order.fulfilled1); //18 usdn
+      const checkParams = await aggregatorService.calc({
+        token0: order.token0, //puzzle
+        token1: order.token1, //usdn
+        amountIn: amount0.toString(), //1 puzzle
+      });
+      const minimumToReceive = calcMinimumToReceive(checkParams.estimatedOut); //N usdn
+      if (amount1.lt(minimumToReceive)) {
+        //if 18 < N
+        //1️⃣ SWAP: USDT -> order.token1
+        if (order.token1 !== USDT_ASSET_ID) {
+          const amountIn = await aggregatorService //amountIn = 17.9 usdt
+            .calcAmountInByAmountOut({
+              token0: USDT_ASSET_ID, //usdt
+              token1: order.token1, //usdn
+              amountOut: order.amount1.toString(), //18 usdn
+            })
+            .catch((e) => {
+              log(`❌ Cannot calc calcAmountInByAmountOut\n ${e.toString()}`);
+              return null;
+            });
+          if (amountIn == null) continue;
+
+          const res = await aggregatorService
+            .swap({
+              token0: USDT_ASSET_ID, //usdt
+              token1: order.token1, //usdn
+              amountIn: amountIn.toString(), // 17.9 usdt
+            })
+            .catch((e) => {
+              const err = `❌ Cannot swap ${USDT_ASSET_ID} -> ${order.token1}\n\n`;
+              log(err + (e.message ?? e.toString()));
+              return null;
+            });
+          if (res == null) continue;
+        }
+
+        // on wallet
+        //   -17.9 usdt
+        //   + 18.3 usdn
+
+        // FULFILL ORDER
+        const res = await blockchainService
+          .invoke({
+            seed: SEED,
+            dApp: LIMIT_ORDERS,
+            args: [{ type: "string", value: order.id }],
+            functionName: "fulfillOrder",
+            payment: [
+              {
+                assetId: order.token1, //usdt
+                amount: amount1.toString(), //18
+              },
+            ],
+          })
+          .catch((e) => {
+            const err = `❌ Cannot FULFILL ORDER ${order.id}\n\n`;
+            log(err + (e.message ?? e.toString()));
+            return null;
+          });
+        if (res == null) continue;
+
+        // on wallet
+        //   -17.9 usdt
+        //   + 0.3 usdn
+        //   + 1 puzzle
+
+        if (order.token0 !== USDT_ASSET_ID) {
+          // SWAP order.token0 -> USDT
+          const params = await aggregatorService.calc({
+            token0: order.token0,
+            token1: USDT_ASSET_ID,
+            amountIn: amount0.toString(),
+          });
+          await blockchainService
+            .invoke({
+              seed: SEED,
+              dApp: AGGREGATOR,
+              args: [
+                { type: "string", value: params.parameters },
+                {
+                  type: "integer",
+                  value: calcMinimumToReceive(params.estimatedOut).toString(),
+                },
+              ],
+              functionName: "swap",
+              payment: [
+                {
+                  assetId: order.token0,
+                  amount: amount0.toString(),
+                },
+              ],
+            })
+            .catch((e) => {
+              const err = `❌ Cannot SWAP  ${order.token0} -> ${USDT_ASSET_ID}\n\n`;
+              log(err + (e.message ?? e.toString()));
+              return null;
+            });
+        }
+        // on wallet
+        //   + 0.2 usdt
+        //   + 0.3 usdn
+      }
+    }
     await sleep(60 * 1000);
   }
 })();
