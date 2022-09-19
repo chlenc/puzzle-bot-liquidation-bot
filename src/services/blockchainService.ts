@@ -42,10 +42,16 @@ class BlockchainService {
     const { data } = await makeNodeRequest(req);
     return data.balance;
   };
-  getAssetBalance = async (address: string, assetId: string) => {
-    const req = `/assets/balance/${address}/${assetId}`;
-    const { data } = await makeNodeRequest(req);
-    return data.balance;
+  getAssetBalance = async (
+    address: string,
+    assetId: string
+  ): Promise<number> => {
+    if (assetId === "WAVES") return await this.getWavesBalance(address);
+    else {
+      const req = `/assets/balance/${address}/${assetId}`;
+      const { data } = await makeNodeRequest(req);
+      return data.balance;
+    }
   };
   getAssetDetails = async (assetId: string): Promise<{ decimals: number }> => {
     const req = `/assets/details/${assetId}`;
