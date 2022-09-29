@@ -11,7 +11,7 @@ import { fulfillOrder, swapToken0ToUsdt, swapUsdtToToken1 } from "../src";
 // token0 = PUZZLE, token1 = USDN
 // amount0 = 1 * 1e8, amount1 = 18 * 1e6
 
-const ORDER_ID = 28;
+const ORDER_ID = 67;
 
 describe("BOT TEST", () => {
   it("stage 0: Get orders and check profitable", async () => {
@@ -38,6 +38,7 @@ describe("BOT TEST", () => {
         token1: order.token1, //usdn
         amountIn: amount0.toString(), //1 puzzle
       });
+      console.log(checkParams);
       const minimumToReceive = aggregatorService.calcMinimumToReceive(
         checkParams.estimatedOut
       );

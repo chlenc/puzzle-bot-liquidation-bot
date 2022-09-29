@@ -1,4 +1,4 @@
-import telegramService from "./services/telegramService";
+import TelegramService from "./services/telegramService";
 import { sleep } from "./utils/utils";
 import {
   getActiveOrdersIds,
@@ -6,18 +6,19 @@ import {
   IOrder,
 } from "./services/dappService";
 import aggregatorService from "./services/aggregatorService";
-import BN, { TValue } from "./utils/BN";
+import BN from "./utils/BN";
 import blockchainService from "./services/blockchainService";
 import { AGGREGATOR, LIMIT_ORDERS, USDT_ASSET_ID } from "./constants";
 import { libs } from "@waves/waves-transactions";
 import { SEED } from "./config";
 import { InvokeScriptCallArgument } from "@waves/ts-types";
-import TelegramService from "./services/telegramService";
 
 const { log, groupMessage } = new TelegramService();
 
 //For normal bot life, the account must have enough money to pay commissions
 //The bot will keep its funds in USDT, respectively, there should be enough of them on the account
+
+const blackList = ["AbunLGErT5ctzVN8MVjb4Ad9YgjpubB8Hqb17VxzfAck"];
 
 //stage 1
 export const swapUsdtToToken1 = async (order: IOrder) => {
@@ -180,7 +181,13 @@ export const swapToken0ToUsdt = async (order: IOrder) => {
     //ORDERS LOOP
     for (let i = 0; i < activeOrderIds.length; i++) {
       const order = await getOrderById(activeOrderIds[i]);
-      if (order.status !== "active") continue;
+      if (
+        order.status !== "active" ||
+        blackList.includes(order.token0) ||
+        blackList.includes(order.token1)
+      ) {
+        continue;
+      }
       const amount0 = order.amount0.minus(order.fulfilled0); //1 puzzle
       const amount1 = order.amount1.minus(order.fulfilled1); //18 usdn
       const { estimatedOut } = await aggregatorService.calc({
