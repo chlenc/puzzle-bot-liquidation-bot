@@ -5,11 +5,14 @@ class TelegramService {
   telegram: TelegramBot;
   constructor() {
     this.telegram = new TelegramBot(TOKEN, { polling: true });
-    // this.telegram.on("message", (msg) => {
-    //   this.telegram.sendMessage(msg.chat.id, msg.chat.id.toString());
-    // });
+    this.telegram.on("message", (msg) => {
+      this.telegram.sendMessage(msg.chat.id, msg.chat.id.toString());
+    });
   }
-  log = (msg: string) => this.telegram.sendMessage(LOG_CHAT_ID, msg);
+  log = (msg: string) => {
+    console.log(msg);
+    return this.telegram.sendMessage(LOG_CHAT_ID, msg);
+  };
   groupMessage = (msg: string) => this.telegram.sendMessage(CHAT_ID, msg);
 }
 export default TelegramService;
