@@ -103,31 +103,6 @@ function movePuzzle(arr: string[]) {
       //loop by users
       for (let i = 0; i < users.length; i++) {
         const user = users[i];
-        // const bc = setupTokens.reduce((acc: BN, assetId: string, index) => {
-        //   const key = `${user}_supplied_${assetId}`;
-        //   const decimals = tokenDetails[index].decimals;
-        //   const deposit = BN.formatUnits(
-        //     getStateByKey(data, key) ?? 0,
-        //     decimals
-        //   );
-        //   if (deposit.eq(0)) return acc;
-        //   const cf = BN.formatUnits(cfs[index]);
-        //   const rate = BN.formatUnits(rates[index].min, decimals);
-        //   const assetBc = cf.times(1).times(deposit).times(rate);
-        //   return acc.plus(assetBc);
-        // }, BN.ZERO);
-        // const bcu = setupTokens.reduce((acc: BN, assetId: string, index) => {
-        //   const key = `${user}_borrowed_${assetId}`;
-        //   const decimals = tokenDetails[index].decimals;
-        //   const borrow = BN.formatUnits(
-        //     getStateByKey(data, key) ?? 0,
-        //     decimals
-        //   );
-        //   const lt = BN.formatUnits(lts[index]);
-        //   const rate = BN.formatUnits(rates[index].min, decimals);
-        //   const assetBcu = borrow.times(rate).div(lt);
-        //   return acc.plus(assetBcu);
-        // }, BN.ZERO);
         const bc = setupTokens.reduce((acc: BN, assetId: string, index) => {
           const key = `${user}_supplied_${assetId}`;
           const decimals = tokenDetails[index].decimals;
@@ -135,12 +110,12 @@ function movePuzzle(arr: string[]) {
             getStateByKey(data, key) ?? 0,
             decimals
           );
-
+          if (deposit.eq(0)) return acc;
           const cf = BN.formatUnits(cfs[index]);
           const rate = BN.formatUnits(rates[index].min, decimals);
-          return acc.plus(deposit.times(rate).times(cf));
+          const assetBc = cf.times(1).times(deposit).times(rate);
+          return acc.plus(assetBc);
         }, BN.ZERO);
-
         const bcu = setupTokens.reduce((acc: BN, assetId: string, index) => {
           const key = `${user}_borrowed_${assetId}`;
           const decimals = tokenDetails[index].decimals;
@@ -148,9 +123,10 @@ function movePuzzle(arr: string[]) {
             getStateByKey(data, key) ?? 0,
             decimals
           );
-
-          const rate = BN.formatUnits(rates[index].min, decimals);
-          return acc.plus(borrow.times(rate));
+          const lt = BN.formatUnits(lts[index]);
+          const rate = BN.formatUnits(rates[index].max, decimals);
+          const assetBcu = borrow.times(rate).div(lt);
+          return acc.plus(assetBcu);
         }, BN.ZERO);
 
         const health = new BN(1).minus(bcu.div(bc));
