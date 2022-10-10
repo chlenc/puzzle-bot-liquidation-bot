@@ -136,7 +136,7 @@ function movePuzzle(arr: string[]) {
           //todo max supply
           const liquidationToken = movePuzzle([...setupTokens]).find((t) => {
             const sup = getStateByKey(data, `${user}_supplied_${t}`);
-            return sup != null && new BN(sup).gt(0);
+            return sup != null && new BN(sup).times(0.1).gt(1);
           });
           const sup = getStateByKey(
             data,
