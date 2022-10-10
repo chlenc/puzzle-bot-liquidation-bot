@@ -5,9 +5,9 @@ class TelegramService {
   telegram: TelegramBot;
   constructor() {
     this.telegram = new TelegramBot(TOKEN, { polling: true });
-    this.telegram.on("message", (msg) => {
-      this.telegram.sendMessage(msg.chat.id, msg.chat.id.toString());
-    });
+    // this.telegram.on("message", (msg) => {
+    //   this.telegram.sendMessage(msg.chat.id, msg.chat.id.toString());
+    // });
   }
   log = (msg: string) => {
     console.log(msg);

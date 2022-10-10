@@ -58,6 +58,25 @@ class BlockchainService {
     const { data } = await makeNodeRequest(req);
     return data;
   };
+  getAssetsDetails = async (
+    ids: string[]
+  ): Promise<Array<{ decimals: number; name: string; assetId: string }>> => {
+    const wavesIndex = ids.findIndex((id) => id === "WAVES");
+    if (wavesIndex !== -1) {
+      ids.splice(wavesIndex, 1);
+    }
+    const { data } = await makeNodeRequest(
+      `/assets/details?${ids.map((id) => "id=" + id).join("&")}&full=false`
+    );
+    if (wavesIndex !== -1) {
+      data.splice(wavesIndex, 0, {
+        decimals: 8,
+        name: "WAVES",
+        assetId: "WAVES",
+      });
+    }
+    return data;
+  };
 }
 
 export default new BlockchainService();

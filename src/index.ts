@@ -11,7 +11,7 @@ import { InvokeScriptCallArgument } from "@waves/ts-types";
 
 const { log, groupMessage } = new TelegramService();
 
-const pools = ["3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT"];
+const pools = ["3P4uA5etnZi4AmBabKinq2bMiWU8KcnHZdH"];
 
 export const getStateByKey = (values: TDataEntry[], key: string) =>
   values.find((state) => state.key === key)?.value;
@@ -84,11 +84,9 @@ function movePuzzle(arr: string[]) {
       if (rates == null) continue;
 
       //fetch token details
-      const { data: tokenDetails } = await makeNodeRequest(
-        `/assets/details?${setupTokens
-          .map((id) => "id=" + id)
-          .join("&")}&full=false`
-      );
+      const tokenDetails = await blockchainService.getAssetsDetails([
+        ...setupTokens,
+      ]);
       //fetch lends
       const req = `/addresses/data/${pool}?matches=(.*)_(supplied%7Cborrowed)_(.*)`;
       const { data } = await makeNodeRequest(req);
@@ -112,7 +110,7 @@ function movePuzzle(arr: string[]) {
           );
           if (deposit.eq(0)) return acc;
           const cf = BN.formatUnits(cfs[index]);
-          const rate = BN.formatUnits(rates[index].min, decimals);
+          const rate = BN.formatUnits(rates[index].min, 6);
           const assetBc = cf.times(1).times(deposit).times(rate);
           return acc.plus(assetBc);
         }, BN.ZERO);
@@ -124,11 +122,10 @@ function movePuzzle(arr: string[]) {
             decimals
           );
           const lt = BN.formatUnits(lts[index]);
-          const rate = BN.formatUnits(rates[index].max, decimals);
+          const rate = BN.formatUnits(rates[index].max, 6);
           const assetBcu = borrow.times(rate).div(lt);
           return acc.plus(assetBcu);
         }, BN.ZERO);
-
         const health = new BN(1).minus(bcu.div(bc));
 
         console.log(user, health.times(100).toString(), "%");
@@ -191,9 +188,9 @@ function movePuzzle(arr: string[]) {
               );
               const amount = BN.formatUnits(
                 amountIn,
-                detail.decimals
+                detail?.decimals
               ).toString();
-              const msg = `🔥 Liquidation!!!\n${amount} ${detail.name} were successfully liquidated\n\nTx: https://new.wavesexplorer.com/tx/${tx.id}\nUser: ${user}\nPool: ${pool}`;
+              const msg = `🔥 Liquidation!!!\n${amount} ${detail?.name} were successfully liquidated\n\nTx: https://new.wavesexplorer.com/tx/${tx.id}\nUser: ${user}\nPool: ${pool}`;
               return log(msg);
             })
             .catch((e) =>
@@ -204,6 +201,7 @@ function movePuzzle(arr: string[]) {
         }
       }
     }
+    console.log("---");
     await sleep(10000);
   }
 })();
