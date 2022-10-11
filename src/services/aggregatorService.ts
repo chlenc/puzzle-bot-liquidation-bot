@@ -1,6 +1,6 @@
 import BN, { TValue } from "../utils/BN";
 import axios from "axios";
-import { AGGREGATOR, USDT_ASSET_ID } from "../constants";
+import { AGGREGATOR } from "../constants";
 import blockchainService from "./blockchainService";
 import { BEARER_TOKEN, SEED } from "../config";
 

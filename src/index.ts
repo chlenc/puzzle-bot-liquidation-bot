@@ -8,10 +8,10 @@ import aggregatorService from "./services/aggregatorService";
 import TelegramService from "./services/telegramService";
 import BigNumber from "bignumber.js";
 import { InvokeScriptCallArgument } from "@waves/ts-types";
-
+import watcherService from "./services/watcherService";
+import { POOLS } from "./constants";
+import tokens from "./tokens.json";
 const { log, groupMessage } = new TelegramService();
-
-const pools = ["3P4uA5etnZi4AmBabKinq2bMiWU8KcnHZdH"];
 
 export const getStateByKey = (values: TDataEntry[], key: string) =>
   values.find((state) => state.key === key)?.value;
@@ -72,8 +72,8 @@ function movePuzzle(arr: string[]) {
 
 (async () => {
   while (true) {
-    for (let i = 0; i < pools.length; i++) {
-      const pool = pools[i];
+    for (let i = 0; i < POOLS.length; i++) {
+      const pool = POOLS[i];
       //fetch settings data
       const setups = await getSetupsByPool(pool);
       if (setups == null) continue;
@@ -206,6 +206,40 @@ function movePuzzle(arr: string[]) {
   }
 })();
 
+(async () => {
+  setInterval(async () => {
+    const data = await watcherService.getUnsentData();
+    for (let i = 0; i < data.length; i++) {
+      console.log(data[i].txs.length);
+      for (let j = 0; j < data[i].txs.length; j++) {
+        const tx = data[i].txs[j];
+        let assetId: string;
+        let amount: number = 0;
+        try {
+          if (["supply", "repay"].includes(tx.call.function)) {
+            amount = tx.payment[0].amount;
+            assetId = tx.payment[0].assetId ?? "WAVES";
+          }
+          if (["borrow", "withdraw"].includes(tx.call.function)) {
+            assetId = tx.call.args[0].value;
+            amount = tx.call.args[1].value ?? "WAVES";
+          }
+        } catch (e) {}
+        let paymentMsg = "";
+        const asset = tokens.find((t) => t.assetId === assetId);
+        if (asset != null) {
+          paymentMsg = `${BN.formatUnits(amount, asset.decimals)} ${
+            asset.symbol
+          }`;
+        }
+        const msg = `Call: ${tx.call.function}\nSender: ${tx.sender}\nAmount: ${paymentMsg}\nPool: ${data[i].pool}\ntx: https://new.wavesexplorer.com/tx/${tx.id}`;
+        console.log(msg);
+        await log(msg);
+        await sleep(1000);
+      }
+    }
+  }, 30000);
+})();
 // COLLATERAL_FACTOR -> setup_ltvs
 // LIQUIDATION_THRESHOLD -> setup_lts
 
