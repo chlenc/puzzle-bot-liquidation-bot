@@ -130,7 +130,7 @@ function movePuzzle(arr: string[]) {
         let health =
           bc.eq(0) || bcu.eq(0) ? new BN(1) : new BN(1).minus(bcu.div(bc));
 
-        console.log(user, health.times(100).toString(), "%");
+        // console.log(user, health.times(100).toString(), "%");
         if (health.lt(0)) {
           //todo max supply
           const liquidationToken = movePuzzle([...setupTokens]).find((t) => {
