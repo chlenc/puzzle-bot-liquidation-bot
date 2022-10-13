@@ -126,7 +126,9 @@ function movePuzzle(arr: string[]) {
           const assetBcu = borrow.times(rate).div(lt);
           return acc.plus(assetBcu);
         }, BN.ZERO);
-        const health = new BN(1).minus(bcu.div(bc));
+
+        let health =
+          bc.eq(0) || bcu.eq(0) ? new BN(1) : new BN(1).minus(bcu.div(bc));
 
         console.log(user, health.times(100).toString(), "%");
         if (health.lt(0)) {
@@ -201,7 +203,6 @@ function movePuzzle(arr: string[]) {
         }
       }
     }
-    console.log("---");
     await sleep(10000);
   }
 })();
