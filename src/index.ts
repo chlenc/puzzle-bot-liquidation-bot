@@ -211,7 +211,7 @@ function movePuzzle(arr: string[]) {
   setInterval(async () => {
     const data = await watcherService.getUnsentData();
     for (let i = 0; i < data.length; i++) {
-      console.log(data[i].txs.length);
+      // console.log(data[i].txs.length);
       for (let j = 0; j < data[i].txs.length; j++) {
         const tx = data[i].txs[j];
         let assetId: string;
