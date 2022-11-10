@@ -1,7 +1,6 @@
 import { sleep } from "./utils/utils";
 import BN from "./utils/BN";
 import makeNodeRequest, { TDataEntry } from "./utils/makeNodeRequest";
-import axios from "axios";
 import blockchainService from "./services/blockchainService";
 import { SEED } from "./config";
 import aggregatorService from "./services/aggregatorService";
@@ -11,7 +10,8 @@ import { InvokeScriptCallArgument } from "@waves/ts-types";
 import watcherService from "./services/watcherService";
 import { POOLS } from "./constants";
 import tokens from "./tokens.json";
-const { log, groupMessage } = new TelegramService();
+import nodeService from "./services/nodeService";
+const { log } = new TelegramService();
 
 export const getStateByKey = (values: TDataEntry[], key: string) =>
   values.find((state) => state.key === key)?.value;
@@ -20,13 +20,8 @@ const getRates = async (
   pool: string
 ): Promise<Array<{ min: BN; max: BN }> | null> => {
   try {
-    const tokensRatesUrl = `https://nodes.wavesnodes.com/utils/script/evaluate/${pool}`;
-    const { data } = await axios(tokensRatesUrl, {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      data: { expr: `getPrices(false)` },
-    });
-    return data.result.value._2.value
+    const data = await nodeService.evaluate(pool, "getPrices(false)");
+    return (data.result.value._2.value as string)
       .split("|")
       .filter((str: string) => str !== "")
       .map((str: string) => {
@@ -54,7 +49,19 @@ const getSetupsByPool = async (pool: string) => {
   ) {
     return null;
   }
-  return { setupTokens, cfs, lts };
+  const tokenRates = await nodeService.evaluate(
+    pool,
+    `calculateTokenRates(false)`
+  );
+  const rates = String(tokenRates.result.value._2.value)
+    .split(",")
+    .filter((v) => v != "")
+    .map((v) => ({
+      brate: BN.formatUnits(v.split("|")[0], 16),
+      srate: BN.formatUnits(v.split("|")[1], 16),
+    }));
+
+  return { setupTokens, cfs, lts, rates };
 };
 
 function movePuzzle(arr: string[]) {
@@ -111,7 +118,11 @@ function movePuzzle(arr: string[]) {
           if (deposit.eq(0)) return acc;
           const cf = BN.formatUnits(cfs[index]);
           const rate = BN.formatUnits(rates[index].min, 6);
-          const assetBc = cf.times(1).times(deposit).times(rate);
+          const assetBc = cf
+            .times(1)
+            .times(deposit)
+            .times(rate)
+            .times(setups.rates[index].srate);
           return acc.plus(assetBc);
         }, BN.ZERO);
         const bcu = setupTokens.reduce((acc: BN, assetId: string, index) => {
@@ -123,7 +134,10 @@ function movePuzzle(arr: string[]) {
           );
           const lt = BN.formatUnits(lts[index]);
           const rate = BN.formatUnits(rates[index].max, 6);
-          const assetBcu = borrow.times(rate).div(lt);
+          const assetBcu = borrow
+            .times(rate)
+            .times(setups.rates[index].brate)
+            .div(lt);
           return acc.plus(assetBcu);
         }, BN.ZERO);
 
@@ -196,9 +210,10 @@ function movePuzzle(arr: string[]) {
               return log(msg);
             })
             .catch((e) =>
-              log("❌ Liquidation error:\n" + e.message ?? e.toString()).catch(
-                () => log("❌ Liquidation error! Please check logs")
-              )
+              log(
+                "❌ Liquidation error:\n" + e.message ??
+                  e.toString() + `\n address: ${user}` + `\n pool: ${pool}`
+              ).catch(() => log("❌ Liquidation error! Please check logs"))
             );
         }
       }
@@ -245,4 +260,3 @@ function movePuzzle(arr: string[]) {
 // LIQUIDATION_THRESHOLD -> setup_lts
 
 process.stdout.write("Bot has been started ✅ ");
-console.log();
