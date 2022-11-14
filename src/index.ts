@@ -11,7 +11,7 @@ import watcherService from "./services/watcherService";
 import { POOLS } from "./constants";
 import tokens from "./tokens.json";
 import nodeService from "./services/nodeService";
-const { log } = new TelegramService();
+const { log, groupMessage } = new TelegramService();
 
 export const getStateByKey = (values: TDataEntry[], key: string) =>
   values.find((state) => state.key === key)?.value;
@@ -211,8 +211,9 @@ function movePuzzle(arr: string[]) {
             })
             .catch((e) =>
               log(
-                "❌ Liquidation error:\n" + e.message ??
-                  e.toString() + `\n address: ${user}` + `\n pool: ${pool}`
+                ("❌ Liquidation error:\n" + e.message ?? e.toString()) +
+                  `\n\nAddress: ${user}` +
+                  `\nPool: ${pool}`
               ).catch(() => log("❌ Liquidation error! Please check logs"))
             );
         }
@@ -249,9 +250,9 @@ function movePuzzle(arr: string[]) {
           }`;
         }
         const msg = `Call: ${tx.call.function}\nSender: ${tx.sender}\nAmount: ${paymentMsg}\nPool: ${data[i].pool}\ntx: https://new.wavesexplorer.com/tx/${tx.id}`;
-        console.log(msg);
+        await groupMessage(msg);
+        await sleep(100);
         await log(msg);
-        await sleep(1000);
       }
     }
   }, 30000);

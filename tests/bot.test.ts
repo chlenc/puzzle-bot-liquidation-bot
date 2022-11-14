@@ -10,7 +10,7 @@ import nodeService from "../src/services/nodeService";
 //pool1
 const pool = "3P4uA5etnZi4AmBabKinq2bMiWU8KcnHZdH";
 const users = [
-  "3P54YBUwh1L9NSBqvASeeR4VCwGtRbiRvnh",
+  "3PMCuLiPnBBUuetWZRriKcqvsAspApKLZjF",
   // "3PMCuLiPnBBUuetWZRriKcqvsAspApKLZjF",
   // "3PQ6BhaXbTGstToqFsvP4AnvoJtPEwCtL1J",
 ];
@@ -170,7 +170,7 @@ describe("BOT TEST", () => {
         let amountIn = "0";
         try {
           amountIn = new BN(sup!)
-            .times(0.1)
+            .times(0.5)
             .toSignificant(0, BigNumber.ROUND_UP)
             .toString();
         } catch (e) {
@@ -197,7 +197,7 @@ describe("BOT TEST", () => {
           ] as InvokeScriptCallArgument<string | number>[],
           seed: SEED,
         };
-        // console.log(invokeParams);
+        console.log(invokeParams);
         await blockchainService
           .invoke(invokeParams)
           .then((tx) => {
