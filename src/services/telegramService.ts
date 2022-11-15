@@ -5,7 +5,7 @@ class TelegramService {
   telegram: TelegramBot;
   constructor() {
     this.telegram = new TelegramBot(TOKEN, { polling: true });
-    this.telegram.onText(/\/start[ \t]*(.*)/, (msg) => {
+    this.telegram.onText(/\/id[ \t]*(.*)/, (msg) => {
       this.telegram.sendMessage(msg.chat.id, msg.chat.id.toString());
     });
   }
