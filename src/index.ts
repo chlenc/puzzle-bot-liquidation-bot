@@ -187,6 +187,16 @@ function movePuzzle(arr: string[]) {
             amountIn,
           };
           const result = await aggregatorService.calc(calcParams);
+          if (result.parameters === "") {
+            await log(
+              `❌  Invalid aggregator response:\n` +
+                `request: ${JSON.stringify(calcParams, null, 4)}\n` +
+                `response: ${JSON.stringify(result, null, 4)}` +
+                `\n\nAddress: ${user}` +
+                `\nPool: ${pool}`
+            );
+            continue;
+          }
           const invokeParams = {
             dApp: pool,
             functionName: "liquidate",
@@ -200,7 +210,7 @@ function movePuzzle(arr: string[]) {
             ] as InvokeScriptCallArgument<string | number>[],
             seed: SEED,
           };
-          // console.log(invokeParams);
+          // console.log({ ...invokeParams, seed: "very private seed" });
           await blockchainService
             .invoke(invokeParams)
             .then((tx) => {
